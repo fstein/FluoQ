@@ -11,10 +11,10 @@ macro "FluoQ Macro" {
 	plotwidth=round(450*1.5);
 	plotheight=round(200*1.5);
 	setFIJIsettings();//Sets up basic Fiji settings, that every user starts with similar presettings
+	waitForUser(copyrigthnotice,""+macroname+"\n \nPlease select your working directory in the next step.\nThis folder should contain your single images or your microscopy output file(s).\nFiles in any subfolder will also be recognized.");
 	closeimages();//closes all open images
 	closewindows();//closes all open windows
 	check_memory();
-	waitForUser(copyrigthnotice,""+macroname+"\n \nPlease select your working directory in the next step.\nThis folder should contain your single images or your microscopy output file(s).\nFiles in any subfolder will also be recognized.");
 	dir = getDirectory("Please choose your working directory:");
 	if(lengthOf(dir)==0)exit("No working directory was chosen!");
 	Acolor=newArray("black","red","blue","green","orange","magenta","pink","yellow","darkGray","gray","lightGray");
@@ -2391,7 +2391,7 @@ function main_Dialog(){
 				};
 				if(List.get("advancedoptions")){
 					if(noofratioch==0)Dialog.addCheckbox("Exclude saturated pixels from analysis.",List.get("noNaNss"));//noNaNss
-					if(noofratioch>0)Dialog.addCheckbox("Exclude saturated pixels from analysis. (Saturated pixels from ratiometric channels are excluded automatically.)",List.get("noNaNss"));//noNaNss
+					if(noofratioch>0)Dialog.addCheckbox("Exclude saturated pixels from analysis. (Saturated pixels from ratiometric channels are always excluded.)",List.get("noNaNss"));//noNaNss
 				};
 				if(List.get("sadvancedoptions")){
 					if(List.get("noNaNss")){
@@ -3020,10 +3020,10 @@ function output_multiexperimentresults(){
 		for(ex=0;ex<Atoanal.length;ex++){
 			channelno=Atoanal[ex];
 			channelname=Achnames[channelno];
-			tablename="All norm mean "+Awindownames[channelno]+" "+List.get("Measure")+" "traces of "+origtitle2;
+			tablename="All norm mean "+Awindownames[channelno]+" "+List.get("Measure")+" traces of "+origtitle2;
 			Acolumnname=add_strings_to_array(msAorigtitle,norm,".");
 			plot_final_results(tablename,tablename,"Time [s]",Acolumnname,msAorigtitle,msAframes,"Time [s]",""+List.get("Measure")+" "+channelname+" intensity");
-			tablename="All norm median "+Awindownames[channelno]+" "+List.get("Measure")+" "traces of "+origtitle2;
+			tablename="All norm median "+Awindownames[channelno]+" "+List.get("Measure")+" traces of "+origtitle2;
 			Acolumnname=add_strings_to_array(msAorigtitle,norm,".");
 			plot_final_results(tablename,tablename,"Time [s]",Acolumnname,msAorigtitle,msAframes,"Time [s]",""+List.get("Measure")+" "+channelname+" intensity");
 		};
