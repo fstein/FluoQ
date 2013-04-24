@@ -18,7 +18,7 @@ macro "FluoQ Macro" {
 	dir = getDirectory("Please choose your working directory:");
 	if(lengthOf(dir)==0)exit("No working directory was chosen!");
 	Acolor=newArray("black","red","blue","green","orange","magenta","pink","yellow","darkGray","gray","lightGray");
-	Achanneltype=newArray("Denominator channel for ratiometric imaging (e.g. donor for FRET)","Numerator channel for ratiometric imaging (e.g. acceptor for FRET)","Intensiometric channel","Cell staining channel for cell segmentation","Nucleus channel for cell segmentation (using voronoi algorithm)","Ignore channel");
+	Achanneltype=newArray("Denominator channel for ratiometric imaging (e.g. donor for FRET)","Numerator channel for ratiometric imaging (e.g. acceptor/transfer for FRET)","Intensiometric channel","Cell staining channel for cell segmentation","Nuclear staining channel for cell segmentation (using voronoi algorithm)","Ignore channel");
 	Ameasuretit=newArray("Mean gray value","Modal gray value","Median gray value","Integrated density","Skewness of pixel distribution","Kurtosis of pixel distribution");
 	Ameasure=newArray("Mean","Mode","Median","RawIntDen","Skew","Kurt");
 	Asetmeasure=newArray("mean","modal","median","integrated","skewness","kurtosis");
@@ -198,9 +198,9 @@ macro "FluoQ Macro" {
 						};
 					};
 				//Write in Resultstable
-					tablename="All norm Mean "+Awindownames[channelno]+" traces of "+origtitle2;
+					tablename="All norm mean "+Awindownames[channelno]+" "+List.get("Measure")+" traces of "+origtitle2;
 					print_in_master_results(extract_array2(Amean,i,frames),extract_array2(ASD,i,frames),tablename,List.get("origtitle"));
-					tablename="All norm Median "+Awindownames[channelno]+" traces of "+origtitle2;
+					tablename="All norm median "+Awindownames[channelno]+" "+List.get("Measure")+" traces of "+origtitle2;
 					print_in_master_results(extract_array2(Amedian,i,frames),extract_array2(ASDM,i,frames),tablename,List.get("origtitle"));
 				};
 			};//end of Multiexperiment analysis
@@ -301,20 +301,28 @@ function open_channel(import,importpath,dir,filenamecontains,series,channelname,
 				};
 				if(channelexists){
 					if(Stack.isHyperstack){
-						run("Reduce Dimensionality...", "  slices");
+						if(List.get("zprojectionmethod")=="Use only one plane"&&slices>1){
+							waitForUser("Please choose the Z-plane, that should be used for further analysis.");
+							Stack.setChannel(filenamecontains);
+							run("Reduce Dimensionality...", " ");
+						}else{
+							run("Reduce Dimensionality...", " slices");
+						};
 						IDtheo=IDorig-1;
 						if(isOpen(IDtheo)){
 							selectImage(IDtheo);
 						};
 					};
 					iID=getImageID();
-					run("Z Project...", "start=1 stop=["+slices+"] projection=[Average Intensity]");
-					run("Rename...", "title=["+pIDorig+"]");	
-					resize();				
-					if(isOpen(iID)){
-						selectImage(iID);
-						close();	
+					if(List.get("zprojectionmethod")!="Use only one plane"&&slices>1){
+						run("Z Project...", "start=1 stop=["+slices+"] projection=["+List.get("zprojectionmethod")+"]");
+						run("Rename...", "title=["+pIDorig+"]");
+						if(isOpen(iID)){
+							selectImage(iID);
+							close();	
+						};
 					};
+					resize();				
 				};
 				if(!channelexists)exit(""+channelname+" does not exist.");			
 			};
@@ -326,20 +334,28 @@ function open_channel(import,importpath,dir,filenamecontains,series,channelname,
 				};
 				if(channelexists){
 					if(Stack.isHyperstack){
-						run("Reduce Dimensionality...", "slices frames");
+						if(List.get("zprojectionmethod")=="Use only one plane"&&slices>1){
+							waitForUser("Please choose the Z-plane, that should be used for further analysis.");
+							Stack.setChannel(filenamecontains);
+							run("Reduce Dimensionality...", "frames");
+						}else{
+							run("Reduce Dimensionality...", "slices frames");
+						};
 						IDtheo=IDorig-1;
 						if(isOpen(IDtheo)){
 							selectImage(IDtheo);
 						};
 					};
 					iID=getImageID();
-					run("Z Project...", "start=1 stop=["+slices+"] projection=[Average Intensity] all");
-					run("Rename...", "title=["+pIDorig+"]");
-					resize();				
-					if(isOpen(iID)){
-						selectImage(iID);
-						close();	
+					if(List.get("zprojectionmethod")!="Use only one plane"&&slices>1){
+						run("Z Project...", "start=1 stop=["+slices+"] projection=["+List.get("zprojectionmethod")+"] all");
+						run("Rename...", "title=["+pIDorig+"]");
+						if(isOpen(iID)){
+							selectImage(iID);
+							close();	
+						};
 					};
+					resize();				
 				};
 				if(!channelexists)exit(""+channelname+" does not exist.");
 			};
@@ -1758,8 +1774,8 @@ function maxseriesnamereturn(importpath,chnumber){
         	if(Exptype==1){
         		if(channels==chnumber&&frames>1){
         			windowstitle=getTitle();
-        			if(lengthOf(filename)<lengthOf(windowstitle))windowstitle = replace(windowstitle, filename, "");
-        			if(lengthOf(filename)>lengthOf(windowstitle))windowstitle = replace(windowstitle, filetype, "");
+        			if(lengthOf(filename)<lengthOf(windowstitle))windowstitle = replace_string(windowstitle, filename, "");
+        			if(lengthOf(filename)>lengthOf(windowstitle))windowstitle = replace_string(windowstitle, filetype, "");
         			windowstitle = replace(windowstitle, filetype, "");
 				windowstitle = checkforcertainchar(windowstitle);
 				if(lengthOf(replace(windowstitle, "Series "+(i+1), ""))<=3){
@@ -3138,7 +3154,7 @@ function check_spf(){
 	Dialog.create("Different frame rate detected. "+copyrigthnotice);
 	if(difference>abs(spf*1.08)){
 		Dialog.create("Different frame rate detected. "+copyrigthnotice);
-		Dialog.addMessage("A different frame interval for your time stack was detected.");
+		Dialog.addMessage("A different frame interval for your time stack was detected.\n(A click on 'Cancel' aborts the macro.)");
 		Dialog.addMessage("You set: "+spforig+" sec per frame.");
 		Dialog.addMessage("Detected: "+spf_detect+" sec per frame.");
 		Dialog.addNumber("New frame interval (s):", spf_detect) ;
@@ -3561,15 +3577,17 @@ function define_channels_to_analyze(){
 			acceptorno++;
 			List.set("acceptorchannel"+acceptorno,Awindownames[ch]);
 			List.set("acceptorname"+acceptorno,Achnames[ch]);
+			Atoanal=Array.concat(Atoanal,ch);
+		};
+		if(donorno!=0&&donorno==acceptorno){
 			noofratioch++;
 			rationame=""+List.get("acceptorname"+noofratioch)+"-"+List.get("donorname"+noofratioch)+"-ratio";
 			Achnames=Array.concat(Achnames,rationame);	
 			Awindownames=Array.concat(Awindownames,""+rationame+" channel");
 			List.set("ratiochannel"+noofratioch,""+rationame+" channel");
 			List.set("checkROIsforNaNs"+noofratioch,List.get("checkROIsforNaNs"+ch));
-			Atoanal=Array.concat(Atoanal,ch);
 			no=Awindownames.length-1;
-			Atoanal=Array.concat(Atoanal,no);		
+			Atoanal=Array.concat(Atoanal,no);	
 		};
 		if(List.get("chtype"+chno)==Achanneltype[2]){
 			Atoanal=Array.concat(Atoanal,ch);
@@ -3782,4 +3800,15 @@ function check_memory(){
 	if(x>0.8)run("Collect Garbage");
 	x=parseFloat(IJ.currentMemory())/parseFloat(IJ.maxMemory());
 	if(x>0.95)exit("Not enough free memory: \n"+IJ.freeMemory());
+};
+function replace_string(string,old,new){
+	x=-1;
+	y=indexOf(old, "+");
+	if(y==0)x=y;
+	y=indexOf(old, "?");
+	if(y==0)x=y;
+	y=indexOf(old, "*");
+	if(y==0)x=y;
+	if(x<0)string=replace(string, old, new);
+	return string;
 };
