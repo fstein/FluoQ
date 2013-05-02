@@ -3579,7 +3579,7 @@ function define_channels_to_analyze(){
 			List.set("acceptorname"+acceptorno,Achnames[ch]);
 			Atoanal=Array.concat(Atoanal,ch);
 		};
-		if(donorno!=0&&donorno==acceptorno){
+		if(donorno!=0&&donorno==acceptorno&&donorno!=noofratioch){
 			noofratioch++;
 			rationame=""+List.get("acceptorname"+noofratioch)+"-"+List.get("donorname"+noofratioch)+"-ratio";
 			Achnames=Array.concat(Achnames,rationame);	
