@@ -1,5 +1,6 @@
 //This Macro was written by Frank Stein - For comments,critique or to report bugs - please contact me via frank.stein@embl.de
 // © copyright by Frank Stein - EMBL, 2012
+//FluoQ© ist licensed under the GNU General Public License as published by the Free Software Foundation (http://www.gnu.org/licenses/gpl.txt )
 var noofratioch;var dir_save;var cAresultsno;var Asegch;var Athresholdmethods;var AallROIsSD;var AallROIs;var AnormallROIsSD;var AnormallROIs;var ASlice;var Aamountrois;var Adefaults;var amountrois;var Asubfolderpath;var maxseriesnumber;var Aseriesname;var Afilepathes;var Aparentfolder;var Aseries;var date;var dir;var resultstring;var resultstringpath;var norm;var dirorig;var stimulation;var spforig;var Exptype;var origtitle2;var sresultstringpath;var sresultstring;var dir_saveorig;var tmp_file_dir; var tmp_file;var timestamp;var timestamp2;var medianFRETchange;var SDmeanFRETchange;var SDmedianFRETchange;var meanFRETchange;var Dirarray;var Dirarrayfilename;var meanFRETchange;var AFRETsc;var scwidth;var scheight;var minparticlesize_signalreach;var thresholdmask;var minvalue_signalreach;var thresholdpic;var nResultsorig;var nResults2;var plotidsc;var ROIsfullpath;var stimulustoplots;var normalize;var AParametersc;var expfilename;var Acells;var Aintensitychangesc;var FRETcalcchoice;var background;var background_;var minvalue_i;var minvalue_;var maxvalue_d;var maxvalue_a;var maxvalue_n;var maxvalue_ic;var maxvalue_i;var processcounter;var msAorigtitle;var msAExperimentnumber;var Atoanal;var msAframes;var msAsavepath;var msAmean;var msAmeanSD;var msAmedian;var msAmedianSD;var msAROI;var Awindownames;var Achnames;var Achextension;var Achcolor;var Aminvalue;var Amaxvalue;var Abackground;var msAmeanFRETchange;var msASDmeanFRETchange;var msAmedianFRETchange;var msASDmedianFRETchange;var Amean;var ASD;var Amedian;var ASDM;var Amax;var Amin;
 macro "FluoQ Macro" {
 	requires("1.46c");
@@ -2940,7 +2941,7 @@ function create_ROIs(ithresholdpic,rep){
 		resetThreshold();
 		amountrois=roiManager("count");
 		if(amountrois>0&&Exptype!=0){
-			fullpath=dir_save+"Unchecked RoiSet.zip";
+			fullpath=dir_save+"Unchecked ROIs.zip";
 			if(List.get("saveanalysis"))roiManager("Save", fullpath);
 			for(chno=0;chno<Atoanal.length;chno++){
 				ch=Atoanal[chno];
@@ -3004,7 +3005,7 @@ function create_ROIs(ithresholdpic,rep){
 	};
 	amountrois=roiManager("count");
 	if(amountrois>0){
-		fullpath=dir_save+"Modified RoiSet.zip";
+		fullpath=dir_save+"Modified ROIs.zip";
 		if(amountrois>0){
 			ROIsfullpath=fullpath;
 			roiManager("Save", fullpath);
