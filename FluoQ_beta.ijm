@@ -1,25 +1,28 @@
 //This Macro was written by Frank Stein - For comments,critique or to report bugs - please contact me via frank.stein@embl.de
-// © copyright by Frank Stein - EMBL, 2012
-//FluoQ© ist licensed under the GNU General Public License as published by the Free Software Foundation (http://www.gnu.org/licenses/gpl.txt )
-var noofratioch;var dir_save;var cAresultsno;var Asegch;var Athresholdmethods;var AallROIsSD;var AallROIs;var AnormallROIsSD;var AnormallROIs;var ASlice;var Aamountrois;var Adefaults;var amountrois;var Asubfolderpath;var maxseriesnumber;var Aseriesname;var Afilepathes;var Aparentfolder;var Aseries;var date;var dir;var resultstring;var resultstringpath;var norm;var dirorig;var stimulation;var spforig;var Exptype;var origtitle2;var sresultstringpath;var sresultstring;var dir_saveorig;var tmp_file_dir; var tmp_file;var timestamp;var timestamp2;var medianFRETchange;var SDmeanFRETchange;var SDmedianFRETchange;var meanFRETchange;var Dirarray;var Dirarrayfilename;var meanFRETchange;var AFRETsc;var scwidth;var scheight;var minparticlesize_signalreach;var thresholdmask;var minvalue_signalreach;var thresholdpic;var nResultsorig;var nResults2;var plotidsc;var ROIsfullpath;var stimulustoplots;var normalize;var AParametersc;var expfilename;var Acells;var Aintensitychangesc;var FRETcalcchoice;var background;var background_;var minvalue_i;var minvalue_;var maxvalue_d;var maxvalue_a;var maxvalue_n;var maxvalue_ic;var maxvalue_i;var processcounter;var msAorigtitle;var msAExperimentnumber;var Atoanal;var msAframes;var msAsavepath;var msAmean;var msAmeanSD;var msAmedian;var msAmedianSD;var msAROI;var Awindownames;var Achnames;var Achextension;var Achcolor;var Aminvalue;var Amaxvalue;var Abackground;var msAmeanFRETchange;var msASDmeanFRETchange;var msAmedianFRETchange;var msASDmedianFRETchange;var Amean;var ASD;var Amedian;var ASDM;var Amax;var Amin;
+//FluoQ ist licensed under the GNU General Public License as published by the Free Software Foundation (http://www.gnu.org/licenses/gpl.txt )
+var noofratioch;var dir_save;var cAresultsno;var Asegch;var Athresholdmethods;var AallROIsSD;var AallROIs;var AnormallROIsSD;var AnormallROIs;var ASlice;var Aamountrois;var Adefaults;var amountrois;var Asubfolderpath;var maxseriesnumber;var Aseriesname;var Afilepathes;var Aparentfolder;var Aseries;var date;var dir;var resultstring;var resultstringpath;var norm;var dirorig;var stimulation;var spforig;var Exptype;var origtitle2;var sresultstringpath;var sresultstring;var dir_saveorig;var tmp_file_dir; var tmp_file;var timestamp;var timestamp2;var medianFRETchange;var SDmeanFRETchange;var SDEmeanFRETchange;var SDmedianFRETchange;var meanFRETchange;var Dirarray;var Dirarrayfilename;var meanFRETchange;var AFRETsc;var scwidth;var scheight;var minparticlesize_signalreach;var thresholdmask;var minvalue_signalreach;var thresholdpic;var nResultsorig;var nResults2;var plotidsc;var ROIsfullpath;var stimulustoplots;var normalize;var AParametersc;var expfilename;var Acells;var Aintensitychangesc;var FRETcalcchoice;var background;var background_;var minvalue_i;var minvalue_;var maxvalue_d;var maxvalue_a;var maxvalue_n;var maxvalue_ic;var maxvalue_i;var processcounter;var msAorigtitle;var msAExperimentnumber;var Atoanal;var msAframes;var msAsavepath;var msAmean;var msAmeanSD;var msAmeanSDE;var msAmedian;var msAmedianSD;var msAROI;var Awindownames;var Achnames;var Achextension;var Achcolor;var Aminvalue;var Amaxvalue;var Abackground;var msAmeanFRETchange;var msASDmeanFRETchange;var msASDEmeanFRETchange;var msAmedianFRETchange;var msASDmedianFRETchange;var Amean;var Anormmean;var ASD;var AnormSD;var ASDE;var AnormSDE;var Amedian;var Anormmedian;var ASDM;var AnormSDM;var Amax;var Amin;
 macro "FluoQ Macro" {
 	requires("1.46c");
 	macroname="FluoQ - Fluorescence Quantification";
-	version2="beta-1";
+	shortnotice="FluoQ";
+	version2="beta-2";
 	tmp_version="-tmp01";
-	version=""+version2+" from 27.03.2013";
-	copyrigthnotice="FluoQ version: "+version2+" - "+fromCharCode(169)+" copyright by EMBL, 2013";
+	version=""+version2+" from 18.07.2013";
+	macroinfo="FluoQ version: "+version2;
 	plotwidth=round(450*1.5);
 	plotheight=round(200*1.5);
 	setFIJIsettings();//Sets up basic Fiji settings, that every user starts with similar presettings
-	waitForUser(copyrigthnotice,""+macroname+"\n \nPlease select your working directory in the next step.\nThis folder should contain your single images or your microscopy output file(s).\nFiles in any subfolder will also be recognized.");
+	waitForUser(macroinfo,""+macroname+"\n \nPlease select your working directory in the next step.\nThis folder should contain your single images or your microscopy output file(s).\nFiles in any subfolder will also be recognized.");
 	closeimages();//closes all open images
 	closewindows();//closes all open windows
 	check_memory();
 	dir = getDirectory("Please choose your working directory:");
 	if(lengthOf(dir)==0)exit("No working directory was chosen!");
 	Acolor=newArray("black","red","blue","green","orange","magenta","pink","yellow","darkGray","gray","lightGray");
-	Achanneltype=newArray("Denominator channel for ratiometric imaging (e.g. donor for FRET)","Numerator channel for ratiometric imaging (e.g. acceptor/transfer for FRET)","Intensiometric channel","Cell staining channel for cell segmentation","Nuclear staining channel for cell segmentation (using voronoi algorithm)","Ignore channel");
+	Achanneltype=newArray("Denominator channel for ratiometric imaging (e.g. donor for FRET)","Numerator channel for ratiometric imaging (e.g. acceptor/transfer for FRET)","Intensiometric channel","Cell segmentation channel (whole cell - no quantification)","Cell segmentation channel (nucleus - voronoi algorithm, no quantification)","Ignore channel");
+	AmeasureTitle=newArray("Area","Mean gray value","Standard deviation","Modal gray value","Min gray value","Max gray value","Perimeter","Circularity","Aspect ratio","Roundness","Solidity","Integrated density","Raw Integrated density","Median","Skewness","Kurtosis","Center of mass - X","Center of mass - Y","Centroid - X","Centroid - Y","Bounding rectangle -X","Bounding rectangle -Y","Bounding rectangle -Width","Bounding rectangle -Height","Fit ellipse -Major","Fit ellipse -Minor","Fit ellipse -Angle","Feret's diameter - length","Feret's diameter - X","Feret's diameter - Y","Feret's diameter - Angle","Feret's diameter - min length");
+	AmeasureAbbrev=newArray("Area","Mean","StdDev","Mode","Min","Max","Perim.","Circ.","AR","Round","Solidity","IntDen","RawIntDen","Median","Skew","Kurt","XM","YM","X","Y","BX","BY","Width","Height","Major","Minor","Angle","Feret","FeretX","FeretY","FeretAngle","MinFeret");
+	AsetMeasurements=newArray("area","mean","standard","modal","min","min","perimeter","shape","shape","shape","shape","integrated","integrated","median","skewness","kurtosis","center","center","centroid","centroid","bounding","bounding","bounding","bounding","fit","fit","fit","feret's ","feret's ","feret's ","feret's ","feret's ");
 	Ameasuretit=newArray("Mean gray value","Modal gray value","Median gray value","Integrated density","Skewness of pixel distribution","Kurtosis of pixel distribution");
 	Ameasure=newArray("Mean","Mode","Median","RawIntDen","Skew","Kurt");
 	Asetmeasure=newArray("mean","modal","median","integrated","skewness","kurtosis");
@@ -119,12 +122,17 @@ macro "FluoQ Macro" {
 				Atime[i]=round(f*parseFloat(List.get("spf")));
 			};
 			Amean=newArray(frames*Atoanal.length);
+			Anormmean=newArray(frames*Atoanal.length);
 			ASD=newArray(frames*Atoanal.length);
+			AnormSD=newArray(frames*Atoanal.length);
+			ASDE=newArray(frames*Atoanal.length);
+			AnormSDE=newArray(frames*Atoanal.length);
 			Amedian=newArray(frames*Atoanal.length);
+			Anormmedian=newArray(frames*Atoanal.length);
 			ASDM=newArray(frames*Atoanal.length);
+			AnormSDM=newArray(frames*Atoanal.length);
 			Amax=newArray(frames*Atoanal.length);
 			Amin=newArray(frames*Atoanal.length);
-		//create thresholdpic
 			getLocationAndSize(x, y, width, height);
 			thresholdpic=create_thresholdpic(List.get("segmentationchannel"));
 		//Create ROI's
@@ -152,15 +160,35 @@ macro "FluoQ Macro" {
 						ochannelno=Atoanal[channelno];
 						for(slice=0;slice<frames;slice++){
 							Aslideresult=newArray(amountrois);
+							Anormslideresult=newArray(amountrois);
 							for(ROIno=0;ROIno<amountrois;ROIno++){
-								Aslideresult[ROIno]=AallROIs[slice+ROIno*frames+channelno*amountrois*frames];					
+								Aslideresult[ROIno]=AallROIs[slice+ROIno*frames+channelno*amountrois*frames];
+								Anormslideresult[ROIno]=AnormallROIs[slice+ROIno*frames+channelno*amountrois*frames];						
 							};
 							Amean[slice+channelno*frames]=calMean(Aslideresult);
-							if(amountrois>1)ASD[slice+channelno*frames]=calSD(Aslideresult);
-							if(amountrois>2)Amedian[slice+channelno*frames]=calMedian(Aslideresult);
-							if(amountrois>2)ASDM[slice+channelno*frames]=calQuartilsdiff(Aslideresult);
-							if(amountrois>2)Amax[slice+channelno*frames]=calMax(Aslideresult);
-							if(amountrois>2)Amin[slice+channelno*frames]=calMin(Aslideresult);
+							Anormmean[slice+channelno*frames]=calMean(Anormslideresult);
+							if(amountrois>1){
+								ASD[slice+channelno*frames]=calSD(Aslideresult);
+								AnormSD[slice+channelno*frames]=calSD(Anormslideresult);
+							};
+							if(amountrois>1){
+								ASDE[slice+channelno*frames]=calSDE(Aslideresult);
+								AnormSDE[slice+channelno*frames]=calSDE(Anormslideresult);
+							};
+							if(amountrois>2){
+								Amedian[slice+channelno*frames]=calMedian(Aslideresult);
+								Anormmedian[slice+channelno*frames]=calMedian(Anormslideresult);
+							};
+							if(amountrois>2){
+								ASDM[slice+channelno*frames]=calQuartilsdiff(Aslideresult);
+								AnormSDM[slice+channelno*frames]=calQuartilsdiff(Anormslideresult);
+							};
+							if(amountrois>2){
+								Amax[slice+channelno*frames]=calMax(Aslideresult);
+							};
+							if(amountrois>2){
+								Amin[slice+channelno*frames]=calMin(Aslideresult);
+							};
 						};
 						channel=Awindownames[ochannelno]; 
 						for(ROIno=0;ROIno<amountrois;ROIno++){
@@ -193,16 +221,17 @@ macro "FluoQ Macro" {
 					if(stimulation){
 						msAmeanFRETchange[loopp+i*maxseriesnumber]=meanFRETchange[i];
 						msASDmeanFRETchange[loopp+i*maxseriesnumber]=SDmeanFRETchange[i];
+						msASDEmeanFRETchange[loopp+i*maxseriesnumber]=SDEmeanFRETchange[i];
 						if(amountrois>2){
 							msAmedianFRETchange[loopp+i*maxseriesnumber]=medianFRETchange[i];
 							msASDmedianFRETchange[loopp+i*maxseriesnumber]=SDmedianFRETchange[i];	
 						};
 					};
 				//Write in Resultstable
-					tablename="All norm mean "+Awindownames[channelno]+" "+List.get("Measure")+" traces of "+origtitle2;
-					print_in_master_results(extract_array2(Amean,i,frames),extract_array2(ASD,i,frames),tablename,List.get("origtitle"));
-					tablename="All norm median "+Awindownames[channelno]+" "+List.get("Measure")+" traces of "+origtitle2;
-					print_in_master_results(extract_array2(Amedian,i,frames),extract_array2(ASDM,i,frames),tablename,List.get("origtitle"));
+					tablename="All mean "+Awindownames[channelno]+" "+norm+List.get("Measure")+" traces of "+origtitle2;
+					print_in_master_results_mean(extract_array2(Amean,i,frames),extract_array2(ASD,i,frames),extract_array2(ASDE,i,frames),extract_array2(Anormmean,i,frames),extract_array2(AnormSD,i,frames),extract_array2(AnormSDE,i,frames),tablename,List.get("origtitle"));
+					tablename="All median "+Awindownames[channelno]+" "+norm+List.get("Measure")+" traces of "+origtitle2;
+					print_in_master_results_median(extract_array2(Amedian,i,frames),extract_array2(ASDM,i,frames),extract_array2(Anormmedian,i,frames),extract_array2(AnormSDM,i,frames),tablename,List.get("origtitle"));
 				};
 			};//end of Multiexperiment analysis
 		};//end of Exptype==1 condition
@@ -225,13 +254,15 @@ macro "FluoQ Macro" {
 	};
 	closewindows();
 	delete_all_global_variables();
-	waitForUser(copyrigthnotice,"Analysis complete!\n(Results were saved in folder "+dir_saveorig+" )");
+	run("Tile");
+	beep();
+	waitForUser(macroinfo,"Analysis complete!\n(Results were saved in folder "+dir_saveorig+" )");
 };
 function delete_all_global_variables(){
 	run("Collect Garbage");
-	Asegch=false;cAresultsno=false;Athresholdmethods=false;AallROIsSD=false;AallROIs=false;AnormallROIsSD=false;AnormallROIs=false;ASlice=false;Aamountrois=false;Adefaults=false;amountrois=false;Asubfolderpath=false;maxseriesnumber=false;Aseriesname=false;Afilepathes=false;Aparentfolder=false;Aseries=false;date=false;dir=false;resultstring=false;resultstringpath=false;norm=false;dirorig=false;stimulation=false;spforig=false;Exptype=false;origtitle2=false;sresultstringpath=false;sresultstring=false;tmp_file_dir=false;tmp_file=false;macroname=false;version=false;version2=false;copyrigthnotice=false;timestamp=false;timestamp2=false;medianFRETchange=false;SDmeanFRETchange=false;SDmedianFRETchange=false;meanFRETchange=false;Dirarray=false;Dirarrayfilename=false;meanFRETchange=false;AFRETsc=false;scwidth=false;scheight=false;minparticlesize_signalreach=false;thresholdmask=false;minvalue_signalreach=false;thresholdpic=false;AmeansecondROISD=false;AimeanwholecellSD=false;AimeanfirstROISD=false;AimeansecondROISD=false;nResultsorig=false;nResults2=false;plotidsc=false;ROIsfullpath=false;stimulustoplots=false;normalize=false;AParametersc=false;version=false;expfilename=false;Acells=false;Aintensitychangesc=false;Decaystart=false;FRETcalcchoice=false;background=false;background_=false;minvalue_i=false;minvalue_=false;maxvalue_d=false;maxvalue_a=false;maxvalue_n=false;maxvalue_ic=false;maxvalue_i=false;saveorig=false;processcounter=false;
+	Asegch=false;cAresultsno=false;Athresholdmethods=false;AallROIsSD=false;AallROIs=false;AnormallROIsSD=false;AnormallROIs=false;ASlice=false;Aamountrois=false;Adefaults=false;amountrois=false;Asubfolderpath=false;maxseriesnumber=false;Aseriesname=false;Afilepathes=false;Aparentfolder=false;Aseries=false;date=false;dir=false;resultstring=false;resultstringpath=false;norm=false;dirorig=false;stimulation=false;spforig=false;Exptype=false;origtitle2=false;sresultstringpath=false;sresultstring=false;tmp_file_dir=false;tmp_file=false;macroname=false;version=false;version2=false;macroinfo=false;timestamp=false;timestamp2=false;medianFRETchange=false;SDmeanFRETchange=false;SDmedianFRETchange=false;meanFRETchange=false;Dirarray=false;Dirarrayfilename=false;meanFRETchange=false;AFRETsc=false;scwidth=false;scheight=false;minparticlesize_signalreach=false;thresholdmask=false;minvalue_signalreach=false;thresholdpic=false;AmeansecondROISD=false;AimeanwholecellSD=false;AimeanfirstROISD=false;AimeansecondROISD=false;nResultsorig=false;nResults2=false;plotidsc=false;ROIsfullpath=false;stimulustoplots=false;normalize=false;AParametersc=false;version=false;expfilename=false;Acells=false;Aintensitychangesc=false;Decaystart=false;FRETcalcchoice=false;background=false;background_=false;minvalue_i=false;minvalue_=false;maxvalue_d=false;maxvalue_a=false;maxvalue_n=false;maxvalue_ic=false;maxvalue_i=false;saveorig=false;processcounter=false;
 	msAorigtitle=false;msAExperimentnumber=false;Atoanal=false;msAframes=false;msAsavepath=false;msAROI=false;Awindownames=false;Achnames=false;Achextension=false;Achcolor=false;Aminvalue=false;Amaxvalue=false;Abackground=false;
-	msAmeanFRETchange=false;msASDmeanFRETchange=false;msAmedianFRETchange=false;msASDmedianFRETchange=false;Amean=false;ASD=false;Amedian=false;ASDM=false;Amax=false;Amin;
+	msAmeanFRETchange=false;msASDmeanFRETchange=false;msASDEmeanFRETchange=false;msAmedianFRETchange=false;msASDmedianFRETchange=false;Amean=false;ASD=false;Amedian=false;ASDM=false;Amax=false;Amin;
 };
 function closewindows(){
 	if(isOpen("Log")){
@@ -275,7 +306,10 @@ function open_channel(import,importpath,dir,filenamecontains,series,channelname,
 			};
 		};
 		if(!channelexists)exit(""+channelname+" does not exist.");
-		if(channelexists)run("Image Sequence...", "open=["+dir+"] number=1000 starting=1 increment=1 scale =100 file=["+filenamecontains+"] sort");	
+		if(channelexists){
+			number=filelist.length;
+			run("Image Sequence...", "open=["+dir+"] number=["+number+"] starting=1 increment=1 scale =100 file=["+filenamecontains+"] sort");	
+		};
 	};
 	if(import==2){	//import with LOCI-bioformat importer
 		series="series_"+List.get("series");
@@ -303,7 +337,7 @@ function open_channel(import,importpath,dir,filenamecontains,series,channelname,
 				if(channelexists){
 					if(Stack.isHyperstack){
 						if(List.get("zprojectionmethod")=="Use only one plane"&&slices>1){
-							waitForUser("Please choose the Z-plane, that should be used for further analysis.");
+							waitForUser("Please choose the Z-plane of your Z-stack, that should be used for further analysis.");
 							Stack.setChannel(filenamecontains);
 							run("Reduce Dimensionality...", " ");
 						}else{
@@ -336,7 +370,7 @@ function open_channel(import,importpath,dir,filenamecontains,series,channelname,
 				if(channelexists){
 					if(Stack.isHyperstack){
 						if(List.get("zprojectionmethod")=="Use only one plane"&&slices>1){
-							waitForUser("Please choose the Z-plane, that should be used for further analysis.");
+							waitForUser("Please choose the Z-plane of your Z-stack, that should be used for further analysis.");
 							Stack.setChannel(filenamecontains);
 							run("Reduce Dimensionality...", "frames");
 						}else{
@@ -406,7 +440,7 @@ function open_channel(import,importpath,dir,filenamecontains,series,channelname,
 	if(import==3){
 		showStatus("Analysis of "+origtitle+"- experiment "+loop+"/"+maxseriesnumber);
 		showProgress(loop/maxseriesnumber);
-		waitForUser(copyrigthnotice,"Please open "+channelname+" after pressing OK.");
+		waitForUser(macroinfo,"Please open "+channelname+" after pressing OK.");
 		importpath=File.openDialog("Please open "+channelname+" after pressing OK.");
 		open(importpath);
 		Stack.getDimensions(width, height, channels, slices, frames);
@@ -536,7 +570,7 @@ function remove_background(channel,BM,background_i,processguieachloop){
 		while(selectionType==-1){
 			wait(10);
 			showProgress(loop/maxseriesnumber);
-			arrange_and_wait(0,channel,"None","Background substraction in "+channelname+"!\nPlease create a ROI that covers only background to identify the background value!\nThen press OK.",0);
+			arrange_and_wait(0,channel,"None","Background subtraction in "+channelname+"!\nPlease create a ROI that covers only part of the background to identify the background value!\nThen press OK.",0);
 		};
 		selectWindow(channel);
 		setLocation(x,y);
@@ -559,7 +593,7 @@ function remove_background(channel,BM,background_i,processguieachloop){
 			while(selectionType==-1){
 				wait(100);
 				showProgress(loop/maxseriesnumber);
-				arrange_and_wait(0,channel,"None","Background substraction in "+channelname+"!\nPlease create a ROI that covers only background to identify the background value!\nThen press OK.",0);
+				arrange_and_wait(0,channel,"None","Background subtraction in "+channelname+"!\nPlease create a ROI that covers only part of the background to identify the background value!\nThen press OK.",0);
 			};
 			roiManager("Add");
 			selectWindow(channel);
@@ -593,10 +627,12 @@ function remove_background(channel,BM,background_i,processguieachloop){
 function remove_saturated_pixels(channel){
 	selectWindow(channel);
 	Smaxvalue=bitDepth();
-	maxvalue=pow(2, Smaxvalue)-parseFloat(List.get("noNaNs"));
 	run("32-bit");
 	if(Smaxvalue==16){
 		maxvalue=getmaximumpixel(channel)-1;
+		if(maxvalue>255&&maxvalue<4096)maxvalue=pow(2, 12)-1;
+		if(maxvalue>4095&&maxvalue<32768)maxvalue=pow(2, 15)-1;
+		if(maxvalue>32768&&maxvalue<65536)maxvalue=pow(2, 16)-1;
 	};
 	maxvalue_i=maxvalue;
 	selectWindow(channel);
@@ -825,6 +861,7 @@ function FRETpiccalc(dir_save,title,channel,Stimulusafterframe,Equilibrationtime
 		getRawStatistics(nPixels, mean, min, max, std, histogram);
 		maxnew=max;
 		run("Fire");
+		run("Multiply...", "value=100");
 		run("Enhance Contrast", "saturated=0.35");
 		run("Calibration Bar...", "location=[Upper Right] fill=White label=Black number=5 decimal=2 font=12 zoom=1");
 		getPixelSize(unit, pixelWidth, pixelHeight);
@@ -937,7 +974,7 @@ function PlotArray(xValues,yValues,ASD,plottitle,xaxis,yaxis,origtitles,dir_save
 		Array.getStatistics(Alimits, min, Errorbars, mean, stdDev);
 		xspace=abs(xMin-xMax)*0.05;
 		Bars=Errorbars>0;
-		if(Bars)yspace=abs(Errorbars/2*1.05);
+		if(Bars)yspace=abs(Errorbars*1.05);
 		if(!Bars)yspace=abs(yMin-yMax)*0.05;
 		xMin = xMin-xspace;xMax=xMax+xspace;yMin=yMin-yspace;yMax=yMax+yspace;
 		plotname=plottitle;
@@ -964,6 +1001,8 @@ function PlotArray(xValues,yValues,ASD,plottitle,xaxis,yaxis,origtitles,dir_save
 		setJustification("right");
 		heightofchar=14/plotheight;
 		Plot.addText(origtitles, 1, 1+2.5*heightofchar);
+		setJustification("left");
+		Plot.addText(shortnotice, 0, 0);
 		if(maxseriesnumber>1){
 			setJustification("left");
 			Plot.addText(origtitle2, 0, 1+2.5*heightofchar);			
@@ -985,7 +1024,7 @@ function PlotMArray(xValues,yValues,ASD,MaxValues,MinValues,plottitle,xaxis,yaxi
 		Array.getStatistics(Alimits, min, Errorbars, mean, stdDev);
 		xspace=abs(xMin-xMax)*0.05;
 		Bars=Errorbars>0;
-		if(Bars)yspace=abs(Errorbars/2*1.05);
+		if(Bars)yspace=abs(Errorbars*1.05);
 		if(!Bars)yspace=abs(yMin-yMax)*0.05;
 		xMin = xMin-xspace;xMax=xMax+xspace;yMin=yMin-yspace;yMax=yMax+yspace;
 		plotname=plottitle;
@@ -1013,6 +1052,8 @@ function PlotMArray(xValues,yValues,ASD,MaxValues,MinValues,plottitle,xaxis,yaxi
 		setJustification("right");
 		heightofchar=14/plotheight;
 		Plot.addText(origtitles, 1, 1+2.5*heightofchar);
+		setJustification("left");
+		Plot.addText(shortnotice, 0, 0);
 		if(maxseriesnumber>1){
 			setJustification("left");
 			Plot.addText(origtitle2, 0, 1+2.5*heightofchar);			
@@ -1088,7 +1129,7 @@ function save_parameter(){
 			Abackground[ch]=List.get("background_"+chno);
 			if(List.get("checkROIsforNaNs_"+ch))print("Automatically detected ROIs that showed NaN as mean values somewhere in the ratio channel were excluded from the analysis.");
 			print("Processing details:");
-			print("Background substraction method: "+List.get("BMs"));	
+			print("Background subtraction method: "+List.get("BMs"));	
 			if(List.get("BM")==2){print("Rolling ball radius:"+List.get("RBradius"));};
 			if(List.get("BM")!=2&&List.get("BM")!=5){
 				print("Subtracted background value: "+List.get("background_"+chno));			
@@ -1096,10 +1137,13 @@ function save_parameter(){
 			if(List.get("BM")==5){
 				print("No background was subtracted from the images.");	
 			};
-			print("Image smoothening method: "+List.get("Asmothenings"));
+			print("Image smoothing method: "+List.get("Asmothenings"));
 			if(List.get("Asmothenings")!="None")print("Radius size of "+List.get("Asmothenings")+" filter: "+List.get("mradius"));
 			print("Thresholding limits::");
 			print("Cell thresholding method: "+List.get("thresholdings"));
+			if(List.get("thresholding")==3){
+				print("Thresholding algorithm used: "+List.get("thresholdmethod"));
+			};
 			print("Minimum thresholding limit: "+List.get("minvalue_"+chno));
 			print("Maximum thresholding limit: "+List.get("maxvalue_"+chno));	
 			print(" ");	
@@ -1122,7 +1166,7 @@ function save_parameter(){
 	if(List.get("createROIsman"))print("All ROIs were created manually.");
 	if(Exptype==1){
 		print(" ");
-		print("Details for time experiment.");
+		print("Details for time-series experiment.");
 		print("Time per frame: "+List.get("spf")+" seconds.");
 		time=parseFloat(List.get("spf"))*frames;
 		min=floor(time/60);
@@ -1134,13 +1178,13 @@ function save_parameter(){
 		if(stimulation)Equilibrationtime2=round((parseFloat(List.get("Stimulusafterframe"))+parseFloat(List.get("Equilibrationtime")))*parseFloat(List.get("spf")));
 		if(stimulation)print("Stimulus was added after "+List.get("Stimulusafterframe")+" frames / after "+Stimulustime+" seconds");
 		if(stimulation)print("Cells stopped to respond after "+List.get("Equilibrationtime")+" frames Stimulation / in total after "+Equilibrationtime2+" seconds");
-		if(stimulation)print("Ratio-change was calculated: "+List.get("FRETcalcchoices"));
+		if(stimulation)print("Amplitude changes were calculated: "+List.get("FRETcalcchoices"));
 	};
 	fullpath=dir_save+"Processing parameters and results.txt";
 	selectWindow("Log");
 	saveAs("Text", fullpath);
 };
-function subfolderarray(dir,chabbrev,chnumber){
+function subfolderarray(dir,chabbrev,chnumber){// partly from http://rsb.info.nih.gov/ij/macros/ListFilesRecursively.txt
 	count = 0;
 	count2=listFilessub(dir,chabbrev,chnumber); 
 	Dirarray=newArray(count2);
@@ -1419,7 +1463,6 @@ function plotresults(loadingpath,Xcolumname,Acolumnname,msAorigtitle,Arowlength,
 	col=0;
 	for(channelno=0;channelno<Acolumnname.length;channelno++){
 		Aline=extract_array3(yValues,channelno,Arowlength[channelno],calMax(Arowlength));
-		if(stimulation)Aline=normalizebaseline(Aline,getmeantonormalize(Aline,List.get("Stimulusafterframe")));
 		add_line(xValues,Aline,Acolor[col],msAorigtitle[channelno],channelno);
 		col++;
 		if(col==Acolor.length)col=0;
@@ -1427,6 +1470,8 @@ function plotresults(loadingpath,Xcolumname,Acolumnname,msAorigtitle,Arowlength,
 	//Captions
 	setJustification("center");
 	Plot.addText(plottitle, 0.5, 0);
+	setJustification("left");
+	Plot.addText(shortnotice, 0, 0);
 	if(maxseriesnumber>1){
 		setJustification("left");
 		Plot.addText(origtitle2, 0, 1+2.5*heightofchar);			
@@ -1437,7 +1482,7 @@ function plotresults(loadingpath,Xcolumname,Acolumnname,msAorigtitle,Arowlength,
 	if(List.get("saveanalysis"))saveAs("Tiff", fullpath);
 };
 function PlotRArray(Atitle,xValues,yValues,ASD,plottitle,xaxis,yaxis,origtitles,dir_save){
-	if(xValues.length>1){	
+	if(xValues.length>1&&xValues.length<200){
 		Alimits=removeNaN(xValues);
 		Array.getStatistics(Alimits, xMin, xMax, mean, stdDev);
 		Alimits=Array.concat(yValues,ASD);
@@ -1449,7 +1494,7 @@ function PlotRArray(Atitle,xValues,yValues,ASD,plottitle,xaxis,yaxis,origtitles,
 		xMaxorig=xMax;
 		xMinorig=xMin;
 		xspace=abs(xMin-xMax)*0.05;
-		if(Errorbars>0)yspace=abs(Errorbars/2*1.05);
+		if(Errorbars>0)yspace=abs(Errorbars*1.05);
 		if(Errorbars==0)yspace=abs(yMin-yMax)*0.05;
 		xMin = xMin-xspace-0.4;xMax=xMax+xspace+0.4;yMin=yMin-yspace;yMax=yMax+yspace;
 		plotname=plottitle;
@@ -1503,6 +1548,8 @@ function PlotRArray(Atitle,xValues,yValues,ASD,plottitle,xaxis,yaxis,origtitles,
 		Plot.setLineWidth(1);
 		setJustification("right");
 		Plot.addText(origtitles, 1, 1+2.5*heightofchar);
+		setJustification("left");
+		Plot.addText(shortnotice, 0, 0);
 		if(maxseriesnumber>1){
 			setJustification("left");
 			Plot.addText(origtitle2, 0, 1+2.5*heightofchar);			
@@ -1533,7 +1580,7 @@ function PlotRArray(Atitle,xValues,yValues,ASD,plottitle,xaxis,yaxis,origtitles,
 	};
 };
 function Plot2RArray(Atitle,xValues,yValues1,ASD1,stringy1,yValues2,ASD2,stringy2,plottitle,xaxis,yaxis,origtitles,dir_saveorig){
-	if(xValues.length>1){	
+	if(xValues.length>1&&xValues.length<200){
 		Alimits=removeNaN(xValues);
 		Array.getStatistics(Alimits, xMin, xMax, mean, stdDev);
 		nullarray=newArray(0,0);
@@ -1547,7 +1594,7 @@ function Plot2RArray(Atitle,xValues,yValues1,ASD1,stringy1,yValues2,ASD2,stringy
 		xMinorig=xMin;
 		xspace=abs(xMin-xMax)*0.05;
 		Bars=Errorbars>0;
-		if(Bars)yspace=abs(Errorbars/2*1.05);
+		if(Bars)yspace=abs(Errorbars*1.05);
 		if(!Bars)yspace=abs(yMin-yMax)*0.05;
 		xMin = xMin-xspace-0.4;xMax=xMax+xspace+0.4;yMin=yMin-yspace;yMax=yMax+yspace;
 		plotname=plottitle;
@@ -1615,6 +1662,8 @@ function Plot2RArray(Atitle,xValues,yValues1,ASD1,stringy1,yValues2,ASD2,stringy
 		Plot.setLineWidth(1);
 		setJustification("right");
 		Plot.addText(origtitles, 1, 1+2.5*heightofchar);
+		setJustification("left");
+		Plot.addText(shortnotice, 0, 0);
 		if(maxseriesnumber>1){
 			setJustification("left");
 			Plot.addText(origtitle2, 0, 1+2.5*heightofchar);			
@@ -1707,7 +1756,9 @@ function multimeasureresultsplot(channel,plotname,yaxis,dir_save,Atime,channelno
 		for(i=0;i<Ameasure.length;i++){
 			if(List.get("Measure")==Ameasure[i])setmeasure=Asetmeasure[i];
 		};
-		run("Set Measurements...", "area "+setmeasure+" standard redirect=["+channel+"] decimal=3");
+		setmeasureString=get_SetMeasurementString();
+		run("Set Measurements...", ""+setmeasureString+" standard stack redirect=["+channel+"] decimal=3");
+		//run("Set Measurements...", "area "+setmeasure+" standard redirect=["+channel+"] decimal=3");
 		roiManager("Deselect");
 		roiManager("Multi Measure");
 		amountrois=roiManager("count");
@@ -1720,7 +1771,7 @@ function multimeasureresultsplot(channel,plotname,yaxis,dir_save,Atime,channelno
 			AROISD=getfromResults(SD,frames);
 			AnormROI=normalizebaseline(AROI,getmeantonormalize(AROI,List.get("Stimulusafterframe")));
 			AnormROISD=normalizebaseline(AROISD,getmeantonormalize(AROI,List.get("Stimulusafterframe")));
-			if(List.get("saveRfile"))write_in_resultstring(channel,AROI,AROISD,c,AnormROI,AnormROISD,frames);
+			if(List.get("saveRfile"))write_in_resultstring(channel,AROI,c,AnormROI,frames);
 			if(channelno<=Atoanal.length){
 				for(slice=0;slice<frames;slice++){
 					AallROIs[slice+ROIno*frames+channelno*amountrois*frames]=AROI[slice];	
@@ -1742,7 +1793,8 @@ function multimeasureresultsplot(channel,plotname,yaxis,dir_save,Atime,channelno
 		};
 		if(List.get("pMM")&&List.get("saveanalysis")){
 			do_norm=false;
-			PlotmultipleArrays(Atime,ROItraces,ROInames,AanalROIs,plotname,"Time [s]",yaxis,List.get("origtitle"),dir_save,do_norm);			
+			ROItracesSD=newArray(ROItraces.length);
+			PlotmultipleArrays(Atime,ROItraces,ROItracesSD,ROInames,AanalROIs,plotname,"Time [s]",yaxis,List.get("origtitle"),dir_save,do_norm);			
 		};
 		selectWindow("Results");
 		fullpath=dir_save+"Table-"+plotname+".xls";
@@ -1759,8 +1811,8 @@ function maxseriesnamereturn(importpath,chnumber){
 	filetype=toLowerCase(filetype);
 	indexpoint=lastIndexOf(filename, File.separator);
 	filename=substring(filename,indexpoint+1);
+	filetype=replace(filetype, "[.]", "");
 	filetype="[.]"+filetype;
-	
 	openimages=newArray(nImages);
  	openi=nImages;
      	for (i=0; i<openi; i++) {
@@ -1929,7 +1981,7 @@ function add_errorbars(xValues,yValues,ASD){
 	Plot.setColor("darkgray");
 	Plot.setLineWidth(1);
 	for(i=0;i<xValues.length;i++){
-		Plot.drawLine(xValues[i], yValues[i]-(ASD[i]/2), xValues[i], yValues[i]+(ASD[i]/2));	
+		Plot.drawLine(xValues[i], yValues[i]-(ASD[i]), xValues[i], yValues[i]+(ASD[i]));	
 	};
 };
 function setFIJIsettings(){//Fiji options to make everything equal and avoid mistakes
@@ -1981,7 +2033,7 @@ function loadparameter(){
 		List.set("maxseriesnumbers",false); //2
 		List.set("origtitle",timestamp); //3
 		List.set("BMs",ABM[1]); //4
-		List.set("mradius",2);//5
+		List.set("mradius",1);//5
 		List.set("thresholdings",Athresholding[0]);//6
 		List.set("AROIcontrols",AROIcontrol[1]);//7
 		List.set("particledetails",false); //8
@@ -1995,7 +2047,7 @@ function loadparameter(){
 		List.set("seriesgrouping",false); //15
 		List.set("multiseries",true); //16
 		List.set("Stimulusafterframe",10); //17
-		List.set("Equilibrationtime",2); //18
+		List.set("Equilibrationtime",0); //18
 		List.set("stopafterframe",0); //19
 		List.set("FRETcalcchoices",AFRETcalcchoices[2]); // //20
 		List.set("Asmothenings",Asmothening[2]); //21
@@ -2007,7 +2059,7 @@ function loadparameter(){
 		List.set("chtype5",Achanneltype[2]);
 		List.set("chcolor2","Yellow");
 		List.set("chcolor3","Red");
-		List.set("RBradius",100); //29
+		List.set("RBradius",300); //29
 		List.set("particlesize",300); //30
 		List.set("maxparticlesize",100000); //31
 		List.set("mincircularity",0.0); //32
@@ -2063,6 +2115,7 @@ function loadparameter(){
 		List.set("segchno",0);
 		List.set("Measure","Mean");
 		List.set("cadvancedoptions","Show advanced options.");
+		List.set("Parameter_bin","1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0");
 	};
 };
 function saveparameter(){
@@ -2084,18 +2137,18 @@ function getdateoffile(importpath){
 };
 function main_Dialog(){
 	Afilelist = getFileList(dir);
-	Aimport=newArray("Import an image sequence.","Use the LOCI Bio-Formats Importer Plugin.","Open manually with File->Open... ");
-	ABM=newArray("Substract a fixed value.","Use ImageJ's built-in 'Subtract background'","Subtract the mean of an interactively selected background ROI.","Do not remove background.");
-	Athresholding=newArray("Interactively with ImageJ's built-in threshold window.","Automatically using fixed values.","Automatically using a predefined thresholding algorithm (e.g. Otsu).");
+	Aimport=newArray("Import an image sequence.","Use the LOCI Bio-Formats Importer plug-in.","Open manually with File->Open... ");
+	ABM=newArray("Subtract a fixed value.","Use ImageJ's built-in 'Subtract background'","Subtract the mean of an interactively selected ROI.","Do not remove background.");
+	Athresholding=newArray("Interactively with ImageJ's built-in threshold window.","Automatically using fixed values.","Automatically using a predefined threshold algorithm (e.g. Otsu).");
 	AFRETcalcchoices=newArray("Using difference of mean values.","Using linear fit (to compensate e.g. for bleaching).","Using maximum observed amplitude change (good for transient changes).");
 	AExptype=newArray("Time series with stimulation.","Time series without stimulation.");
 	ALOCIimport=newArray("File format not listed, type in file extension manually","Leica LCS LEI - *.lei","Nikon NIS-Elements ND2 - *.nd2","Zeiss LSM (Laser Scanning Microscope) 510 - *.lsm","Leica LAS AF LIF (Leica Image File Format) - *.lif","Olympus FluoView FV1000 - *.oib","Olympus FluoView FV1000 - *.oif","Zeiss AxioVision ZVI (Zeiss Vision Image) - *.zvi","Bitplane Imaris - *.ims","Lambert Instruments FLIM - *.fli","TIFF - *.tif","TIFF - *.tiff","AVI - *.avi","Windows Bitmap - *.bmp","Graphics Interchange Format - *.gif","JPEG - *.jpg","Portable Network Graphics - *.png");
 	ALOCIfileext=newArray("???",".lei",".nd2",".lsm",".lif",".oib",".oif",".zvi",".ims",".fli",".tif",".tiff",".avi",".bmp",".gif",".jpg",".png");
 	Athresholdmethods = getList("threshold.methods");
 	Achannelcolor=newArray("Grays","Red","Green","Blue","Cyan","Magenta","Yellow","Fire");
-	AROIcontrol=newArray("Manually with selection tool.","Semiautomatically with binary mask modification.","Automatically without manual correction.");
+	AROIcontrol=newArray("Manually with selection tool.","Semi-automatically with binary mask modification.","Automatically without user interaction.");
 	Asmothening=newArray("None","Gaussian Blur","Median","Mean");
-	Aadvancedoptions=newArray("Activate advanced option dialogues.","Show preset parameters.","Hide advanced parameter settings.");
+	Aadvancedoptions=newArray("Activate advanced option dialogs.","Show preset parameters.","Hide advanced parameter settings.");
 	loadparameter();//Load all variables that have been used in the last session or set initial parameter
 	//1st Dialog
 	List.set("origtitle",timestamp);
@@ -2108,17 +2161,17 @@ function main_Dialog(){
 	checkD6=false;
 	while(!dialogdone){
 		if(checkD1){
-			Dialog.create("Dialog I - "+copyrigthnotice);
-			Dialog.addMessage("Choose the details of your experiment.");
-			Dialog.addChoice("Experiment type:",AExptype, List.get("AExptypes"));//AExptypes 0
-			Dialog.addChoice("How do you want to import your images?", Aimport, List.get("imports")); //imports 1
-			Dialog.addCheckbox("Analyze multiple files (these could also be in any subfolder).",List.get("maxseriesnumbers"));//11 maxseriesnumbers
-			Dialog.addString("Experiment name:", List.get("origtitle")); //2 origtitle
-			Dialog.addMessage("Details for image processing.");
+			Dialog.create("Dialog I - "+macroinfo);
+			Dialog.addMessage("Define experimental details.");
+			Dialog.addChoice("Type of experiment:",AExptype, List.get("AExptypes"));//AExptypes 0
+			Dialog.addChoice("Data import procedure:", Aimport, List.get("imports")); //imports 1
+			Dialog.addCheckbox("Analyze multiple files (including subfolders).",List.get("maxseriesnumbers"));//11 maxseriesnumbers
+			Dialog.addString("Name of experiment (no special characters):", List.get("origtitle")); //2 origtitle
+			Dialog.addMessage("Details for image processing. (Quantification is based on processed images.)");
 			Dialog.addChoice("Background subtraction method:",ABM,List.get("BMs")); //7 Background subtraction method BMs
-			Dialog.addChoice("Noise reduction/smoothening method:",Asmothening,List.get("Asmothenings"));
-			Dialog.addChoice("How to identify thresholding levels (to distinguish signal from background)?",Athresholding,List.get("thresholdings"));//10 thresholdings
-			Dialog.addChoice("How to segment and define cell Regions Of Interest (ROIs)?",AROIcontrol,List.get("AROIcontrols"));
+			Dialog.addChoice("Noise reduction/smoothing method:",Asmothening,List.get("Asmothenings"));
+			Dialog.addChoice("Threshold method (to exclude low value pixels):",Athresholding,List.get("thresholdings"));//10 thresholdings
+			Dialog.addChoice("ROI segmentation procedure (Regions of interest):",AROIcontrol,List.get("AROIcontrols"));
 			//Dialog.addCheckbox("Show advanced options (If not ticked, recommended or presaved settings will be chosen).",List.get("advancedoptions"));//advancedoptions
 			Dialog.setInsets(10,0,0);
 			Dialog.addChoice("Activate, show or hide advanced options?",Aadvancedoptions,List.get("cadvancedoptions"));
@@ -2182,7 +2235,7 @@ function main_Dialog(){
 			if(List.get("imports")==Aimport[1]){List.set("import",2);}; //LOCI Bioformat importer - all pictures in subfolder
 			if(List.get("imports")==Aimport[2]){List.set("import",3);}; //Open pictures or stack with command open();
 			if(List.get("import")==3)List.set("maxseriesnumbers",false);
-		//BM Background substraction method
+		//BM Background subtraction method
 			if(List.get("BMs")==ABM[0]){List.set("BM",1);}; //Fixed value
 			if(List.get("BMs")==ABM[1]){List.set("BM",2);}; //Rolling ball
 			if(List.get("BMs")==ABM[2]){List.set("BM",3);}; //Manually selected background ROI
@@ -2200,18 +2253,18 @@ function main_Dialog(){
 	//2nd Dialog
 		//------------------------------------------------
 		if(checkD2){
-			Dialog.create("Dialog II - "+copyrigthnotice);
-			if(List.get("import")==2)Dialog.addMessage("Details for Bio-Formats importer PlugIn.");
+			Dialog.create("Dialog II - "+macroinfo);
+			if(List.get("import")==2)Dialog.addMessage("Details for Bio-Formats importer plug-in.");
 			if(List.get("import")==2&&!List.get("maxseriesnumbers")){
-				Dialog.addChoice("Choose the microscopy output file you want to analyze.",Afilelist,List.get("filename"));//filename 0		
+				Dialog.addChoice("Choose file to analyze.",Afilelist,List.get("filename"));//filename 0		
 			};
 			if(List.get("import")==2&&List.get("maxseriesnumbers")){
-				Dialog.addChoice("Choose the filetype you want to import.",ALOCIimport,List.get("LOCIimports"));//LOCIimports 
+				Dialog.addChoice("Choose file extension.",ALOCIimport,List.get("LOCIimports"));//LOCIimports
 			};
 			if(Exptype==1){//Details for timelapse experiments
 				Dialog.addMessage("Details for time series analysis.");
 				Dialog.addNumber("Time per frame? [s]",List.get("spf"));//6c spf
-				if(stimulation)Dialog.addNumber("After how many frames did you stimulate your cells? (How many frames are baseline?)",parseFloat(List.get("Stimulusafterframe")));//6b Stimulusafterframe
+				if(stimulation)Dialog.addNumber("After how many frames did you stimulate your cells? (How many frames belong to baseline?)",parseFloat(List.get("Stimulusafterframe")));//6b Stimulusafterframe
 				if(stimulation){
 					if(List.get("advancedoptions"))Dialog.addNumber("Analysis should begin how many frames after the start of your stimulation?",List.get("Equilibrationtime")); //6b2 Equilibrationtime
 					if(List.get("sadvancedoptions")){
@@ -2285,6 +2338,8 @@ function main_Dialog(){
 					};
 				};
 			};
+			manual_filetype_input=false;
+			if(List.get("filetype")==ALOCIfileext[0])manual_filetype_input=true;
 			if(List.get("seriesgrouping"))List.set("multiseries",false);
 		};
 		if(List.get("import")==2&&Exptype==1)List.set("seriesgrouping",false);
@@ -2301,10 +2356,10 @@ function main_Dialog(){
 	//Import channel dialog
 		//------------------------------------------------
 		if(checkD3){
-			Dialog.create("Dialog III - "+copyrigthnotice);
+			Dialog.create("Dialog III - "+macroinfo);
 			Dialog.addMessage("Details to import your imaging channels.");
 			if(List.get("import")==2&&List.get("maxseriesnumbers")){
-				if(List.get("filetype")==ALOCIfileext[0]){
+				if(manual_filetype_input){
 					Dialog.addString("File extension of your image file(s) (e.g. '.tif').",List.get("filetype"));		
 				};
 			};
@@ -2313,7 +2368,7 @@ function main_Dialog(){
 				Dialog.addChoice("Type of channel:",Achanneltype, List.get("chtype"+ch));
 				Dialog.addString("Name of fluorophore:", List.get("chname"+ch));
 				if(List.get("import")==1){
-					Dialog.addString("Filenames contain:",List.get("chabbrev"+ch)); //5 String 1 donorname List.get("chabbrev")+ch-1);
+					Dialog.addString("File-names contain:",List.get("chabbrev"+ch)); //5 String 1 donorname List.get("chabbrev")+ch-1);
 				};
 				if(List.get("import")==2){
 					List.set("chabbrev"+ch,ch);
@@ -2337,7 +2392,7 @@ function main_Dialog(){
 				List.set("nucleusname",0);	
 			};
 			if(List.get("import")==2&&List.get("maxseriesnumbers")){
-				if(List.get("filetype")==ALOCIfileext[0]){
+				if(manual_filetype_input){
 					List.set("filetype",toLowerCase(Dialog.getString()));
 				};
 			};
@@ -2393,7 +2448,7 @@ function main_Dialog(){
 				for(f=0;f<Ameasuretit.length;f++){
 					if(Ameasure[f]==List.get("Measure"))Ameasureinit=Ameasuretit[f];	
 				};
-				Dialog.create("Dialog IV - "+copyrigthnotice);
+				Dialog.create("Dialog IV - "+macroinfo);
 				if(List.get("sadvancedoptions")){
 					Dialog.setInsets(0,20,0);
 					Dialog.addMessage("List of defined parameters from advanced options:");	
@@ -2407,8 +2462,8 @@ function main_Dialog(){
 					Dialog.addMessage(""+Ameasureinit+" will be extracted from the raw pixels of each ROI.");
 				};
 				if(List.get("advancedoptions")){
-					if(noofratioch==0)Dialog.addCheckbox("Exclude saturated pixels from analysis.",List.get("noNaNss"));//noNaNss
-					if(noofratioch>0)Dialog.addCheckbox("Exclude saturated pixels from analysis. (Saturated pixels from ratiometric channels are always excluded.)",List.get("noNaNss"));//noNaNss
+					if(noofratioch==0)Dialog.addCheckbox("Exclude saturated pixels from intensiometric channels.",List.get("noNaNss"));//noNaNss
+					if(noofratioch>0)Dialog.addCheckbox("Exclude saturated pixels from intensiometric channels. (Saturated pixels from ratiometric channels are always excluded.)",List.get("noNaNss"));//noNaNss
 				};
 				if(List.get("sadvancedoptions")){
 					if(List.get("noNaNss")){
@@ -2416,14 +2471,14 @@ function main_Dialog(){
 						Dialog.addMessage("Saturated pixels are will be excluded from the analysis.");
 					};
 				};
-				if((List.get("maxseriesnumbers")||List.get("multiseries"))&&List.get("thresholding")!=3&&List.get("advancedoptions"))Dialog.addCheckbox("Acquire thresholding limits only in the first experiment and apply values for the following.",List.get("processguieachloop"));
+				if((List.get("maxseriesnumbers")||List.get("multiseries"))&&List.get("thresholding")!=3&&List.get("advancedoptions"))Dialog.addCheckbox("Acquire threshold values only in the first experiment and apply them for the following.",List.get("processguieachloop"));
 				if((List.get("maxseriesnumbers")||List.get("multiseries"))&&List.get("thresholding")!=3&&List.get("sadvancedoptions")){
 					Dialog.setInsets(0,40,0);
 					if(List.get("processguieachloop"))Dialog.addMessage("Thresholding limits are aquired only in the first experiment and applied for the following.");
 				};
 				for(ch=1;ch<=parseFloat(List.get("chnumber"));ch++){
 					if(List.get("BM")==1||List.get("thresholding")==2)Dialog.addMessage("Details for image processing for "+List.get("chname"+ch)+"-channel.");
-					if(List.get("BM")==1)Dialog.addNumber("Background value to substract:",parseFloat(List.get("background_"+ch)));
+					if(List.get("BM")==1)Dialog.addNumber("Background value to subtract:",parseFloat(List.get("background_"+ch)));
 					if(List.get("thresholding")==2){
 						Dialog.addNumber("Set minimum thresholding level:",parseFloat(List.get("minvalue_"+ch)));//6b minvalue_ic	
 					};
@@ -2436,7 +2491,7 @@ function main_Dialog(){
 					};
 				};
 				if(List.get("thresholding")==3){
-					if(List.get("advancedoptions"))Dialog.addChoice("Thresholding method to distinguish cells from background:", Athresholdmethods, List.get("thresholdmethod"));	
+					if(List.get("advancedoptions"))Dialog.addChoice("Threshold algorithm to exclude low value pixels:", Athresholdmethods, List.get("thresholdmethod"));	
 					if(List.get("sadvancedoptions")){
 						Dialog.setInsets(0,40,0);
 						Dialog.addMessage("The "+List.get("thresholdmethod")+" threshodling method is used to distinguish cells from background.");
@@ -2444,7 +2499,7 @@ function main_Dialog(){
 				};
 				Dialog.addMessage(" ");
 				if(List.get("thresholding")==2){
-					Dialog.addNumber("Set minimum thresholding limit for cell segmentation.",List.get("minvalue"));  
+					Dialog.addNumber("Set minimum threshold limit for cell segmentation.",List.get("minvalue"));  
 				};
 				if(List.get("BM")==2){
 					if(List.get("advancedoptions"))Dialog.addNumber("Rolling ball radius for built-in 'Subtract background':", List.get("RBradius"));
@@ -2543,14 +2598,14 @@ function main_Dialog(){
 	//5th Dialog
 		if(checkD5){
 			if(List.get("advancedoptions")){
-				Dialog.create("Dialog V - Save options. "+copyrigthnotice);
+				Dialog.create("Dialog V - Save options. "+macroinfo);
 				Dialog.addMessage("Please choose the images you want to save.");
 				if(Exptype==1){
 					if(List.get("import")==2)Dialog.addCheckbox("Save processed 8-bit images (scale bar and time stamp included).",List.get("save8"));//3
 					if(List.get("import")!=2)Dialog.addCheckbox("Save processed 8-bit images (time stamp included).",List.get("save8"));//3
 				};
 				Dialog.addCheckbox("Save processed 32-bit images.",List.get("save32"));//4
-				Dialog.addCheckbox("Save cell mask images.",List.get("savemask"));//6 
+				Dialog.addCheckbox("Save binary mask.",List.get("savemask"));//6 
 				Dialog.addMessage(" ");
 				Dialog.addCheckbox("Do statistical analysis and save result table(s).",List.get("saveanalysis"));//8
 				Dialog.addMessage(" ");
@@ -2586,11 +2641,11 @@ function main_Dialog(){
 		if(Exptype==1){
 			if(checkD6){
 				if(List.get("advancedoptions")&&List.get("saveanalysis")){
-					Dialog.create("Dialog VI - Chose plots to create. "+copyrigthnotice);
+					Dialog.create("Dialog VI - Choose plots and summaries to save. "+macroinfo);
 					if(stimulation){
 						Dialog.addCheckbox("Compute image that shows amplitude change for each pixel.",List.get("saveFRETratio"));//7
 					};
-					Dialog.addMessage(" ");
+					Dialog.addMessage("Choose plots:");
 					Dialog.addCheckbox("Plot "+List.get("Measure")+" intensity of all ROIs versus time.",List.get("pMM"));
 					Dialog.addCheckbox("Plot "+List.get("Measure")+" intensity as mean of all ROIs versus time.",List.get("pmean"));	
 					Dialog.addCheckbox("Plot "+List.get("Measure")+" intensity as median of all ROIs versus time.",List.get("pmedian"));
@@ -2598,6 +2653,13 @@ function main_Dialog(){
 						Dialog.addMessage("Plots for multi-parameter imaging.");
 						Dialog.addCheckbox("Plot intensity change of all channels versus time in one plot.",List.get("pmccor"));
 					};
+					Dialog.addMessage("Additional measurement parameter(s) for each ROI:");
+					Adefaults=split(List.get("Parameter_bin")); 
+					if(Adefaults.length<=1){
+						List.set("Parameter_bin","1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0");
+						Adefaults=split(List.get("Parameter_bin")); 
+					};
+					Dialog.addCheckboxGroup(8,4,AmeasureTitle,Adefaults);
 					Dialog.addMessage(" ");
 					Dialog.addCheckbox("Go to the previous dialog.",false);
 					Dialog.show();
@@ -2610,6 +2672,11 @@ function main_Dialog(){
 					if(Atoanal.length>1){
 						List.set("pmccor",Dialog.getCheckbox());
 					};
+					for(i=0;i<AmeasureTitle.length;i++){
+						Adefaults[i]=Dialog.getCheckbox();	
+					};
+					measure_Parameter_bin=array2string(Adefaults," ");
+					List.set("Parameter_bin",measure_Parameter_bin);
 					checkD=Dialog.getCheckbox();
 				};
 				checkD6=false;
@@ -2652,7 +2719,7 @@ function getimportparameter(){
 			showStatus("The macro looks for "+List.get("filetype")+"-files in your working folder!");
 			Afilepathes=importpatharray(dir,List.get("filetype"),"0");
 			if(Afilepathes[0]=="No file was found")exit("No file with  the extension "+List.get("filetype")+" was found in any subfolder of "+dir);
-			showStatus("The macro extracts the filenames of all found files!");
+			showStatus("The macro extracts the file-names of all found files!");
 			Aseriesname=filenamearray(Afilepathes,List.get("filetype"));
 			showStatus("The macro extracts the names of the parent folder of all found files!");
 			Aparentfolder=nameofparentfolder(Afilepathes);
@@ -2705,7 +2772,7 @@ function getimportparameter(){
 };
 function experimentchoose_dialog(){
 	if(List.get("maxseriesnumbers")||List.get("multiseries")){
-		Dialog.create("Experiment selection. "+copyrigthnotice);
+		Dialog.create("Experiment selection. "+macroinfo);
 		Dialog.addMessage("Choose the experiments to analyze.");
 		drows=Aseriesname.length;
 		maximumrows=round(scheight/30);
@@ -2751,7 +2818,7 @@ function editnames_dialog(){
 	if(List.get("maxseriesnumbers")||List.get("multiseries")){
 		if(List.get("editnames")){
 			if(Aseriesname.length<=20){
-				Dialog.create("Edit experiment names. "+copyrigthnotice);
+				Dialog.create("Edit experiment names. "+macroinfo);
 				Dialog.addMessage("Please edit the names of the experiments you have chosen to analyze.");
 				for(i=0;i<Aseriesname.length;i++){
 					Dialog.addString(Aseriesname[i], Aseriesname[i]);
@@ -2767,7 +2834,7 @@ function editnames_dialog(){
 				totaldialogs=counter;
 				if(remainder!=0)totaldialogs++;
 				for(i=1;i<=counter;i++){
-					Dialog.create("Edit experiment names. Dialog"+i+" from "+totaldialogs+" - "+copyrigthnotice);
+					Dialog.create("Edit experiment names. Dialog"+i+" from "+totaldialogs+" - "+macroinfo);
 					Dialog.addMessage("Please edit the names of the experiments you have chosen to analyze.");
 					for(r=0;r<20;r++){
 						c=20*(i-1)+r;
@@ -2780,7 +2847,7 @@ function editnames_dialog(){
 					};
 				};
 				if(remainder!=0){
-					Dialog.create("Edit experiment names. Dialog"+i+" from "+totaldialogs+" - "+copyrigthnotice);
+					Dialog.create("Edit experiment names. Dialog"+i+" from "+totaldialogs+" - "+macroinfo);
 					Dialog.addMessage("Please edit the names of the experiments you have chosen to analyze.");
 					for(r=0;r<remainder;r++){
 						c=counter*20+r;
@@ -2849,7 +2916,7 @@ function create_thresholdchannel(channelname){
 function create_thresholdpic(channelname){
 	selectWindow(channelname);	
 	getLocationAndSize(x, y, width, height);
-	ithresholdpic="Z-Project of "+channelname;
+	ithresholdpic="Time projection of "+channelname;
 	intermediate="Intermediate picture of "+channelname;
 	run("Select None");
 	run("Duplicate...", "title=["+intermediate+"] duplicate range=1-["+frames+"]");
@@ -2923,13 +2990,19 @@ function create_ROIs(ithresholdpic,rep){
 				selectWindow("B&C");
 				setLocation(scwidth-200,scheight-340);	
 			};	
-			setTool(18);//setTool("Pencil Tool");
+			set_Pencil_Tool();
+			if(List.get("watershed")){
+				setForegroundColor(255, 255, 255);
+				arrange_and_wait(0,thresholdmask,ithresholdpic,"Please check the binary mask and the result of the watershed algorithm. Reconnect cells with the Pencil Tool if necessary.\nThen press OK.",1);	
+			};
+			set_Pencil_Tool();
+			setForegroundColor(0, 0, 0);
 			showProgress(loop/maxseriesnumber);
 			if(frames==1){
-				arrange_and_wait(0,thresholdmask,ithresholdpic,"Please check the binary picture and devide cells with the Pencil Tool if necessary. \nUsage of 'Synchronize Windows' is recommended. Click on 'Synchronize All' in this window to make cell division easier.\nThen press OK.",1);	
+				arrange_and_wait(0,thresholdmask,ithresholdpic,"Please check the binary mask and divide cells with the Pencil Tool if necessary. \nUsage of 'Synchronize Windows' is recommended. Click on 'Synchronize All' in this window to make cell division easier.\nThen press OK.",1);	
 			};
 			if(frames>1){
-				arrange_and_wait(0,thresholdmask,ithresholdpic,"Please check the binary channel and devide cells with the Pencil Tool if necessary.\nDon't forget to go through each frame.\nUsage of 'Synchronize Windows' is recommended. Click on 'Synchronize All' in this window to make cell division easier.\nThen press OK.",1);	
+				arrange_and_wait(0,thresholdmask,ithresholdpic,"Please check the binary mask channel and divide cells with the Pencil Tool if necessary.\nDon't forget to go through each frame.\nUsage of 'Synchronize Windows' is recommended. Click on 'Synchronize All' in this window to make cell division easier.\nThen press OK.",1);	
 			};
 		};
 		selectWindow(thresholdmask);
@@ -3037,12 +3110,18 @@ function output_multiexperimentresults(){
 		for(ex=0;ex<Atoanal.length;ex++){
 			channelno=Atoanal[ex];
 			channelname=Achnames[channelno];
-			tablename="All norm mean "+Awindownames[channelno]+" "+List.get("Measure")+" traces of "+origtitle2;
-			Acolumnname=add_strings_to_array(msAorigtitle,norm,".");
-			plot_final_results(tablename,tablename,"Time [s]",Acolumnname,msAorigtitle,msAframes,"Time [s]",""+List.get("Measure")+" "+channelname+" intensity");
-			tablename="All norm median "+Awindownames[channelno]+" "+List.get("Measure")+" traces of "+origtitle2;
-			Acolumnname=add_strings_to_array(msAorigtitle,norm,".");
-			plot_final_results(tablename,tablename,"Time [s]",Acolumnname,msAorigtitle,msAframes,"Time [s]",""+List.get("Measure")+" "+channelname+" intensity");
+			tablename="All mean "+Awindownames[channelno]+" "+norm+List.get("Measure")+" traces of "+origtitle2;
+			Acolumnname=add_strings_to_array(msAorigtitle,""+norm+List.get("Measure"),".");
+			plot_final_results(tablename,tablename,"Time [s]",Acolumnname,msAorigtitle,msAframes,"Time [s]",""+norm+List.get("Measure")+" "+channelname+" intensity");
+			plottitle="All mean "+Awindownames[channelno]+" "+List.get("Measure")+" traces of "+origtitle2;
+			Acolumnname=add_strings_to_array(msAorigtitle,""+List.get("Measure"),".");
+			plot_final_results(tablename,plottitle,"Time [s]",Acolumnname,msAorigtitle,msAframes,"Time [s]",""+List.get("Measure")+" "+channelname+" intensity");
+			tablename="All median "+Awindownames[channelno]+" "+norm+List.get("Measure")+" traces of "+origtitle2;
+			Acolumnname=add_strings_to_array(msAorigtitle,""+norm+List.get("Measure"),".");
+			plot_final_results(tablename,tablename,"Time [s]",Acolumnname,msAorigtitle,msAframes,"Time [s]",""+norm+List.get("Measure")+" "+channelname+" intensity");
+			plottitle="All median "+Awindownames[channelno]+" "+List.get("Measure")+" traces of "+origtitle2;
+			Acolumnname=add_strings_to_array(msAorigtitle,""+List.get("Measure"),".");
+			plot_final_results(tablename,plottitle,"Time [s]",Acolumnname,msAorigtitle,msAframes,"Time [s]",""+List.get("Measure")+" "+channelname+" intensity");
 		};
 		if(stimulustoplots){
 			stimulustoplots=false;stimulustoplotsx=true;	
@@ -3057,8 +3136,9 @@ function output_multiexperimentresults(){
 				channelname=Achnames[channelno];
 				print_in_results("Mean "+channelname+" amplitude change [%]",extract_array2(msAmeanFRETchange,ex,maxseriesnumber));
 				print_in_results("Mean StdDev "+channelname+" amplitude change [%]",extract_array2(msASDmeanFRETchange,ex,maxseriesnumber));
+				print_in_results("Mean StdErr "+channelname+" amplitude change [%]",extract_array2(msASDEmeanFRETchange,ex,maxseriesnumber));
 				print_in_results("Median "+channelname+" amplitude change [%]",extract_array2(msAmedianFRETchange,ex,maxseriesnumber));
-				print_in_results("Quartile difference "+channelname+" amplitude change [%]",extract_array2(msASDmedianFRETchange,ex,maxseriesnumber));					
+				print_in_results("IQR "+channelname+" amplitude change [%]",extract_array2(msASDmedianFRETchange,ex,maxseriesnumber));					
 			};
 		};
 		if(List.get("saveanalysis"))saveresults("Experiment "+origtitle2+" overview",dir_saveorig);
@@ -3073,11 +3153,11 @@ function output_multiexperimentresults(){
 			for(ex=0;ex<Atoanal.length;ex++){
 				channelno=Atoanal[ex];
 				channelname=Achnames[channelno];
-				if(calMean(extract_array2(msAmeanFRETchange,ex,maxseriesnumber))!=0)PlotRArray(msAorigtitle,msAExperimentnumber,extract_array2(msAmeanFRETchange,ex,maxseriesnumber),extract_array2(msASDmeanFRETchange,ex,maxseriesnumber),"Plot Mean "+channelname+" change overview","Experiment number","Mean "+channelname+" amplitude change [%]"," ",dir_saveorig);
-				if(calMean(extract_array2(msAmedianFRETchange,ex,maxseriesnumber))!=0)PlotRArray(msAorigtitle,msAExperimentnumber,extract_array2(msAmedianFRETchange,ex,maxseriesnumber),extract_array2(msASDmedianFRETchange,ex,maxseriesnumber),"Plot Median "+channelname+" change overview","Experiment number","Median "+channelname+" amplitude change [%]"," ",dir_saveorig);
+				if(calMean(extract_array2(msAmeanFRETchange,ex,maxseriesnumber))!=0)PlotRArray(msAorigtitle,msAExperimentnumber,extract_array2(msAmeanFRETchange,ex,maxseriesnumber),extract_array2(msASDEmeanFRETchange,ex,maxseriesnumber),"Plot Mean "+fromCharCode(177)+" StdErr "+channelname+" change overview","Experiment number","Mean "+channelname+" amplitude change [%]"," ",dir_saveorig);
+				if(calMean(extract_array2(msAmedianFRETchange,ex,maxseriesnumber))!=0)PlotRArray(msAorigtitle,msAExperimentnumber,extract_array2(msAmedianFRETchange,ex,maxseriesnumber),extract_array2(msASDmedianFRETchange,ex,maxseriesnumber),"Plot Median "+fromCharCode(177)+" IQR "+channelname+" change overview","Experiment number","Median "+channelname+" amplitude change [%]"," ",dir_saveorig);
 				if(Atoanal.length==2&&ex==0){
-					if(calMean(extract_array2(msAmeanFRETchange,0,maxseriesnumber))!=0&&calMean(extract_array2(msAmeanFRETchange,1,maxseriesnumber))!=0)Plot2RArray(msAorigtitle,msAExperimentnumber,extract_array2(msAmeanFRETchange,0,maxseriesnumber),extract_array2(msASDmeanFRETchange,0,maxseriesnumber),""+Achnames[Atoanal[0]],extract_array2(msAmeanFRETchange,1,maxseriesnumber),extract_array2(msASDmeanFRETchange,1,maxseriesnumber),""+Achnames[Atoanal[1]],"Plot "+Achnames[Atoanal[0]]+" and "+Achnames[Atoanal[1]]+"-mean amplitude change overview","Experiment number","Mean amplitude change [%]"," ",dir_saveorig);		
-					if(calMean(extract_array2(msAmedianFRETchange,0,maxseriesnumber))!=0&&calMean(extract_array2(msAmedianFRETchange,1,maxseriesnumber))!=0)Plot2RArray(msAorigtitle,msAExperimentnumber,extract_array2(msAmedianFRETchange,0,maxseriesnumber),extract_array2(msASDmedianFRETchange,0,maxseriesnumber),""+Achnames[Atoanal[0]],extract_array2(msAmedianFRETchange,1,maxseriesnumber),extract_array2(msASDmedianFRETchange,1,maxseriesnumber),""+Achnames[Atoanal[1]],"Plot "+Achnames[Atoanal[0]]+" and "+Achnames[Atoanal[1]]+"-median amplitude change overview","Experiment number","Median amplitude change [%]"," ",dir_saveorig);		
+					if(calMean(extract_array2(msAmeanFRETchange,0,maxseriesnumber))!=0&&calMean(extract_array2(msAmeanFRETchange,1,maxseriesnumber))!=0)Plot2RArray(msAorigtitle,msAExperimentnumber,extract_array2(msAmeanFRETchange,0,maxseriesnumber),extract_array2(msASDEmeanFRETchange,0,maxseriesnumber),""+Achnames[Atoanal[0]],extract_array2(msAmeanFRETchange,1,maxseriesnumber),extract_array2(msASDEmeanFRETchange,1,maxseriesnumber),""+Achnames[Atoanal[1]],"Plot "+Achnames[Atoanal[0]]+" and "+Achnames[Atoanal[1]]+"-Mean "+fromCharCode(177)+" StdErr amplitude change overview","Experiment number","Mean amplitude change [%]"," ",dir_saveorig);		
+					if(calMean(extract_array2(msAmedianFRETchange,0,maxseriesnumber))!=0&&calMean(extract_array2(msAmedianFRETchange,1,maxseriesnumber))!=0)Plot2RArray(msAorigtitle,msAExperimentnumber,extract_array2(msAmedianFRETchange,0,maxseriesnumber),extract_array2(msASDmedianFRETchange,0,maxseriesnumber),""+Achnames[Atoanal[0]],extract_array2(msAmedianFRETchange,1,maxseriesnumber),extract_array2(msASDmedianFRETchange,1,maxseriesnumber),""+Achnames[Atoanal[1]],"Plot "+Achnames[Atoanal[0]]+" and "+Achnames[Atoanal[1]]+"-median "+fromCharCode(177)+" IQR amplitude change overview","Experiment number","Median amplitude change [%]"," ",dir_saveorig);		
 				};
 			};
 		};
@@ -3152,9 +3232,9 @@ function check_spf(){
 	spf_detect=Stack.getFrameInterval();
 	spf=parseFloat(List.get("spf"));
 	difference=abs(spf_detect-spf);
-	Dialog.create("Different frame rate detected. "+copyrigthnotice);
+	Dialog.create("Different frame rate detected. "+macroinfo);
 	if(difference>abs(spf*1.08)){
-		Dialog.create("Different frame rate detected. "+copyrigthnotice);
+		Dialog.create("Different frame rate detected. "+macroinfo);
 		Dialog.addMessage("A different frame interval for your time stack was detected.\n(A click on 'Cancel' aborts the macro.)");
 		Dialog.addMessage("You set: "+spforig+" sec per frame.");
 		Dialog.addMessage("Detected: "+spf_detect+" sec per frame.");
@@ -3212,12 +3292,22 @@ function extract_array(array,ROIno,channelno,amountrois,frames){//[x+y*xmax+z*xm
 };
 function print_channel_in_results(AallROIs,windowstitle,channelname,channelno){
 	print_in_results("Mean of "+channelname,extract_array2(Amean,channelno,frames));
-	if(amountrois>1)print_in_results("Mean SD of "+channelname,extract_array2(ASD,channelno,frames));	
+	if(amountrois>1)print_in_results("StdDev of "+channelname,extract_array2(ASD,channelno,frames));
+	if(amountrois>1)print_in_results("StdErr of "+channelname,extract_array2(ASDE,channelno,frames));
+	if(stimulation){
+		print_in_results("Norm.Mean of "+channelname,extract_array2(Anormmean,channelno,frames));
+		if(amountrois>1)print_in_results("Norm.StdDev of "+channelname,extract_array2(AnormSD,channelno,frames));
+		if(amountrois>1)print_in_results("Norm.StdErr of "+channelname,extract_array2(AnormSDE,channelno,frames));
+	};	
 	if(amountrois>2){
 		print_in_results("Median of "+channelname,extract_array2(Amedian,channelno,frames));
-		print_in_results("Quartile difference of "+channelname,extract_array2(ASDM,channelno,frames));
+		print_in_results("IQR of "+channelname,extract_array2(ASDM,channelno,frames));
 		print_in_results("Maximum of "+channelname,extract_array2(Amax,channelno,frames));
 		print_in_results("Minimum of "+channelname,extract_array2(Amin,channelno,frames));
+		if(stimulation){
+			print_in_results("Norm.Median of "+channelname,extract_array2(Anormmedian,channelno,frames));
+			print_in_results("Norm.IQR of "+channelname,extract_array2(AnormSDM,channelno,frames));
+		};
 	};
 };
 function print_channel_in_results2(AallROIs,windowstitle,channelname,channelno){
@@ -3226,6 +3316,7 @@ function print_channel_in_results2(AallROIs,windowstitle,channelname,channelno){
 function print_mean_amplitude_changes(AFRETsc,Atoanal,Awindownames,Achnames,dir_save,origtitle){
 	meanFRETchange=newArray(Atoanal.length);
 	SDmeanFRETchange=newArray(Atoanal.length);
+	SDEmeanFRETchange=newArray(Atoanal.length);
 	medianFRETchange=newArray(Atoanal.length);
 	SDmedianFRETchange=newArray(Atoanal.length);
 	for(ex=0;ex<Atoanal.length;ex++){
@@ -3241,48 +3332,49 @@ function print_mean_amplitude_changes(AFRETsc,Atoanal,Awindownames,Achnames,dir_
 function print_mean_amplitude_changes_per_channel(AFRETsc,windowstitle,channelname,channelno,ex){
 	if(amountrois==1){
 		meanFRETchange[ex]=AFRETsc[0+ex*amountrois];
-		SDmeanFRETchange[ex]=0;					
+		SDmeanFRETchange[ex]=0;	
+		SDEmeanFRETchange[ex]=0;					
 	};
 	if(amountrois>=2){
 		meanFRETchange[ex]=calMean(extract_array2(AFRETsc,ex,amountrois));
-		SDmeanFRETchange[ex]=calSD(extract_array2(AFRETsc,ex,amountrois));		
+		SDmeanFRETchange[ex]=calSD(extract_array2(AFRETsc,ex,amountrois));
+		SDEmeanFRETchange[ex]=calSDE(extract_array2(AFRETsc,ex,amountrois));		
 	};
 	meanFRETchangeno=d2s(meanFRETchange[ex],2);	
 	SDmeanFRETchangeno=d2s(SDmeanFRETchange[ex],2);
+	SDEmeanFRETchangeno=d2s(SDEmeanFRETchange[ex],2);
 	print(""+channelname+"-change results of "+List.get("origtitle"));
 	print(""+channelname+"-change for each ROI was calculated in the following way:");
 	if(FRETcalcchoice==1){
-		print("MeanBeforeStimulus = Mean intensity of first "+List.get("Stimulusafterframe")+" frames");
-		print("MeanAfterStimulus = Mean intensity of last frames (frames "+List.get("Decaystart")+" - "+List.get("stopafterframe")+")");
-		print("deltaIntensity = MeanBeforeStimulus - MeanAfterStimulus");
-		print(""+channelname+"-change = (deltaIntensity*100) / MeanBeforeStimulus");
+		print("Baseline = Average "+List.get("Measure")+" intensity of first "+List.get("Stimulusafterframe")+" frames");
+		print("Response = Average "+List.get("Measure")+" intensity of last frames (frames "+List.get("Decaystart")+" - "+List.get("stopafterframe")+")");
+		print(""+channelname+"-amplitude change = (Baseline - Response)*100 / Baseline");
 		print("The Overall "+channelname+"-changes were either calculated from the mean or from the median of all single cell measurements.");
 		print(" ");
 	};
 	if(FRETcalcchoice==2){
-		print("Position x = Frame of Stimulation+(Equilibrationtime/2).");
-		print("BeforeStimulus = y-Value of a Straight line fit for the first "+List.get("Stimulusafterframe")+" frames at Position x.");
-		print("AfterStimulus = y-Value of a Straight line fit for the last frames (frames "+List.get("Decaystart")+" - "+List.get("stopafterframe")+") at Position x.");
-		print("deltaIntensity = BeforeStimulus - AfterStimulus");
-		print(""+channelname+" change = (deltaIntensity*100) / MeanBeforeStimulus");
+		print("Prediction frame  = Frame of Stimulation+Equilibrationtime = "+List.get("Decaystart"));
+		print("Baseline = y-Value of a Straight line fit for the first "+List.get("Stimulusafterframe")+" frames at Position "+List.get("Decaystart"));
+		print("Response = y-Value of a Straight line fit for the last frames (frames "+List.get("Decaystart")+" - "+List.get("stopafterframe")+") at Position "+List.get("Decaystart"));
+		print(""+channelname+"-amplitude change = (Baseline - Response)*100 / Baseline");
 		print("The Overall "+channelname+"-changes were either calculated from the mean or from the median of all single cell measurements.");
 		print(" ");
 	};
 	if(FRETcalcchoice==3){
-		print("MeanBeforeStimulus = Mean intensity of first "+List.get("Stimulusafterframe")+" frames");
-		print("MaxAfterStimulus = Maximal or minimal observed intensity of last frames (frames "+List.get("Decaystart")+" - "+List.get("stopafterframe")+")");
-		print("deltaIntensity = MeanBeforeStimulus - MaxAfterStimulus");
-		print(""+channelname+" change = (deltaIntensity*100) / MeanBeforeStimulus");
+		print("Baseline = Average "+List.get("Measure")+" intensity of first "+List.get("Stimulusafterframe")+" frames");
+		print("Response = Maximal or minimal observed "+List.get("Measure")+" intensity of last frames (frames "+List.get("Decaystart")+" - "+List.get("stopafterframe")+")");
+		print(""+channelname+"-amplitude change = (Baseline - Response)*100 / Baseline");
 		print("The Overall "+channelname+"-changes were either calculated from the mean or from the median of all single cell measurements.");
 		print(" ");
 	};
-	print("Mean overall "+channelname+"-change: "+meanFRETchangeno+" "+fromCharCode(177)+" "+SDmeanFRETchangeno+" %");
+	print("Mean overall "+channelname+"-change: "+meanFRETchangeno+" "+fromCharCode(177)+" "+SDmeanFRETchangeno+" % (StdDev)");
+	print("Mean overall "+channelname+"-change: "+meanFRETchangeno+" "+fromCharCode(177)+" "+SDEmeanFRETchangeno+" % (StdErr)");
 	if(amountrois>2){
 		medianFRETchange[ex]=calMedian(extract_array2(AFRETsc,ex,amountrois));
 		medianFRETchangeno=d2s(medianFRETchange[ex],2);
 		SDmedianFRETchange[ex]=calQuartilsdiff(extract_array2(AFRETsc,ex,amountrois));
 		SDmedianFRETchangeno=d2s(SDmedianFRETchange[ex],2);
-		print("Median overall "+channelname+"-change: "+medianFRETchangeno+" "+fromCharCode(177)+" "+SDmedianFRETchangeno+" %");	
+		print("Median overall "+channelname+"-change: "+medianFRETchangeno+" "+fromCharCode(177)+" "+SDmedianFRETchangeno+" % (IQR)");	
 		print("___________________________________________________________________________________");	
 	};
 };
@@ -3293,18 +3385,18 @@ function plot_all_channels(Atoanal,Awindownames,Achnames,dir_save,origtitle){
 		plot_channel_graphs(Awindownames[channelno],Achnames[channelno],ex);
 	};
 	if(Atoanal.length>1){
-		PlotmultipleArrays(Atime,Amean,Awindownames,Atoanal,"Plot - channel comparison of "+List.get("Measure")+" intensity changes as mean of all ROIs versus time","Time [s]",""+List.get("Measure")+" intensity",origtitle,dir_save,do_norm);
+		PlotmultipleArrays(Atime,Anormmean,AnormSDE,Awindownames,Atoanal,"Plot - channel comparison of "+norm+List.get("Measure")+" intensity changes as mean "+fromCharCode(177)+" StdErr of all ROIs versus time","Time [s]",""+List.get("Measure")+" intensity",origtitle,dir_save,do_norm);
 		if(amountrois>2){
-			if(List.get("pmccor"))PlotmultipleArrays(Atime,Amedian,Awindownames,Atoanal,"Plot - channel comparison of "+List.get("Measure")+" intensity changes as median of all ROIs versus time","Time [s]","Median intensity",origtitle,dir_save,do_norm);
+			if(List.get("pmccor"))PlotmultipleArrays(Atime,Anormmedian,AnormSDM,Awindownames,Atoanal,"Plot - channel comparison of "+norm+List.get("Measure")+" intensity changes as median "+fromCharCode(177)+" IQR of all ROIs versus time","Time [s]","Median intensity",origtitle,dir_save,do_norm);
 		};
 	};
 };
 function plot_channel_graphs(windowstitle,channelname,channelno){
 	if(List.get("pmean")){
-		PlotArray(Atime,extract_array2(Amean,channelno,frames),extract_array2(ASD,channelno,frames),"Plot - "+channelname+" "+List.get("Measure")+" intensity as mean of all ROIs versus time","Time [s]",""+List.get("Measure")+" "+channelname+" intensity",List.get("origtitle"),dir_save);			
+		PlotArray(Atime,extract_array2(Amean,channelno,frames),extract_array2(ASD,channelno,frames),"Plot - "+channelname+" "+List.get("Measure")+" intensity as mean "+fromCharCode(177)+" StdDev of all ROIs versus time","Time [s]",""+List.get("Measure")+" "+channelname+" intensity",List.get("origtitle"),dir_save);			
 	};
 	if(List.get("pmedian")){
-		if(amountrois>2)PlotMArray(Atime,extract_array2(Amedian,channelno,frames),extract_array2(ASDM,channelno,frames),extract_array2(Amax,channelno,frames),extract_array2(Amin,channelno,frames),"Plot - "+channelname+" "+List.get("Measure")+" intensity as median of all ROIs versus time","Time [s]",""+List.get("Measure")+" "+channelname+" intensity",List.get("origtitle"),dir_save);					
+		if(amountrois>2)PlotMArray(Atime,extract_array2(Amedian,channelno,frames),extract_array2(ASDM,channelno,frames),extract_array2(Amax,channelno,frames),extract_array2(Amin,channelno,frames),"Plot - "+channelname+" "+List.get("Measure")+" intensity as median "+fromCharCode(177)+" IQR of all ROIs versus time","Time [s]",""+List.get("Measure")+" "+channelname+" intensity",List.get("origtitle"),dir_save);					
 	};
 };
 function Extract_ROItraces_allch(array,ROIno,amountrois,frames,noofch){
@@ -3329,9 +3421,6 @@ function Extract_tracestoplot(array,Atoanal,frames,Stimulusafterframe,do_norm){
 	for(i=0;i<Atoanal.length;i++){
 		channelno=Atoanal[i];
 		Aline=extract_array2(array,i,frames);
-		if(stimulation){
-			if(do_norm)Aline=normalizebaseline(Aline,getmeantonormalize(Aline,Stimulusafterframe));
-		};
 		if(i==0)Finalarray=Aline;
 		if(i>0){
 			Finalarray=Array.concat(Finalarray,Aline);	
@@ -3339,16 +3428,39 @@ function Extract_tracestoplot(array,Atoanal,frames,Stimulusafterframe,do_norm){
 	};
 	return Finalarray;
 };
-function PlotmultipleArrays(xValues,yValues,Awindownames,Atoanal,plottitle,xaxis,yaxis,origtitle,dir_save,do_norm){
+function Extract_errorbarstoplot(array,arraySD,Atoanal,frames,Stimulusafterframe,do_norm){
+	for(i=0;i<Atoanal.length;i++){
+		channelno=Atoanal[i];
+		Alinenorm=extract_array2(array,i,frames);
+		Aline=extract_array2(arraySD,i,frames);
+		if(i==0)Finalarray=Aline;
+		if(i>0){
+			Finalarray=Array.concat(Finalarray,Aline);	
+		};
+	};
+	return Finalarray;
+};
+function PlotmultipleArrays(xValues,yValues,AStdErr,Awindownames,Atoanal,plottitle,xaxis,yaxis,origtitle,dir_save,do_norm){
 	Alimits=removeNaN(xValues);
 	Array.getStatistics(Alimits, xMin, xMax, mean, stdDev);
+	Array.getStatistics(AStdErr, min, max, mean, stdDev);
+	if(max==0)Bars=false;
+	if(max>0)Bars=true;
+	if(Bars){
+		Aerrors=Extract_errorbarstoplot(yValues,AStdErr,Atoanal,frames,parseFloat(List.get("Stimulusafterframe")),do_norm);
+		Aerrors=removeNaN(Aerrors);
+		Array.getStatistics(Aerrors, min, Errorbars, mean, stdDev);
+	};
+	
+	
 	Alimits=Extract_tracestoplot(yValues,Atoanal,frames,parseFloat(List.get("Stimulusafterframe")),do_norm);
 	Alimits=removeNaN(Alimits);
 	Array.getStatistics(Alimits, yMin, yMax, mean, stdDev);
 	xMaxorig=xMax;
 	xMinorig=xMin;
 	xspace=abs(xMin-xMax)*0.05;
-	yspace=abs(yMin-yMax)*0.05;
+	if(Bars)yspace=abs(Errorbars*1.05);
+	if(!Bars)yspace=abs(yMin-yMax)*0.05;
 	xMin = xMin-xspace;xMax=xMax+xspace;yMin=yMin-yspace;yMax=yMax+yspace;
 	if(plotheight/Atoanal.length<14){
 		plotheight=Atoanal.length*14.2;
@@ -3389,16 +3501,26 @@ function PlotmultipleArrays(xValues,yValues,Awindownames,Atoanal,plottitle,xaxis
 	for(line=0;line<Atoanal.length;line++){
 		channelno=Atoanal[line];
 		Aline=extract_array2(yValues,line,frames);
-		if(stimulation){
-			if(do_norm)Aline=normalizebaseline(Aline,getmeantonormalize(Aline,parseFloat(List.get("Stimulusafterframe"))));
-		};
-		add_line(xValues,Aline,Acolor[col],Awindownames[channelno],line);
+		if(Bars)AError=extract_array2(AStdErr,line,frames);
+		/*if(stimulation){
+			if(do_norm){
+				meantonormalize=getmeantonormalize(Aline,parseFloat(List.get("Stimulusafterframe")));
+				Aline=normalizebaseline(Aline,meantonormalize);
+				if(Bars){
+					AError=normalizebaseline(AError,meantonormalize);
+				};
+			};
+		};*/
+		if(!Bars)add_line(xValues,Aline,Acolor[col],Awindownames[channelno],line);
+		if(Bars)add_line_with_errorbars(xValues,Aline,AError,Acolor[col],Awindownames[channelno],line);
 		col++;
 		if(col==Acolor.length)col=0;
 	};
 	//Captions
 	setJustification("center");
 	Plot.addText(plottitle, 0.5, 0);
+	setJustification("left");
+	Plot.addText(shortnotice, 0, 0);
 	setJustification("right");
 	Plot.addText(origtitle, 1, 1+2.5*heightofchar);
 	if(maxseriesnumber>1){
@@ -3409,6 +3531,23 @@ function PlotmultipleArrays(xValues,yValues,Awindownames,Atoanal,plottitle,xaxis
 	Plot.show();
 	fullpath=dir_save+plottitle+".tif";
 	if(List.get("saveanalysis")==true)saveAs("Tiff", fullpath);
+};
+function add_line_with_errorbars(xvalues,Aline,Aerror,color,name,line){
+	if(calMean(Aline)!=0){
+		xvalues=Array.trim(xvalues, Aline.length);
+		Plot.setColor(color);
+		Plot.setLineWidth(1);
+		Plot.add("line",xvalues,Aline);
+		if(calMean(Aerror)!=0&&Aline.length==Aerror.length){
+			for(i=0;i<xValues.length;i++){
+				Plot.drawLine(xValues[i], Aline[i]-(Aerror[i]), xValues[i], Aline[i]+(Aerror[i]));	
+			};
+		};
+		setJustification("right");
+		Plot.addText(""+fromCharCode(9472,9472),1-stringlength-widthofchar,begincharheight+(line*heightofchar));
+		Plot.setColor("black");
+		Plot.addText(name, 1-0.5*widthofchar, begincharheight+(line*heightofchar));	
+	};
 };
 function add_line(xvalues,Aline,color,name,line){
 	if(calMean(Aline)!=0){	
@@ -3479,26 +3618,34 @@ function write_resultstring_header(){
 	File.saveString(resultstring,resultstringpath);
 	resultstring="";
 };
-function write_in_resultstring2(date,channel,ROIno,Sliceno,mean,meanSD,Aarea){
-	for(row=0;row<ROIno.length;row++){
-		title=List.get("origtitle");
-		Aresultstring=newArray(title,title+"."+channel+"."+ROIno[row],date,channel,ROIno[row],Sliceno[row],ROIno.length,Aarea[row],frames,mean[row],meanSD[row]);
-		istring=a2resultsline(Aresultstring);
-		resultstring+=istring;
-	};
-	File.append(resultstring,resultstringpath);
-	resultstring="";
-};
-function print_in_master_results(array,arraySD,tablename,columnname){
+function print_in_master_results_mean(array,arraySD,arraySDE,normarray,normarraySD,normarraySDE,tablename,columnname){
 	run("Clear Results");
+	//tablename="All norm Mean ratio traces of "+origtitle2;
 	Path=dir_saveorig+tablename+".xls";
 	if(File.exists(Path))open(Path);
 	print_in_results_nocheck("Time [s]",Atime);
-	print_in_results_nocheck(""+columnname+".",array);
-	print_in_results_nocheck(""+columnname+" SD",arraySD);
+	print_in_results_nocheck(""+List.get("Measure")+columnname+".",array);
+	print_in_results_nocheck(""+List.get("Measure")+columnname+" StdDev",arraySD);
+	print_in_results_nocheck(""+List.get("Measure")+columnname+" StdErr",arraySDE);
 	if(stimulation){
-		print_in_results_nocheck(""+norm+columnname+".",normalizebaseline(array,getmeantonormalize(array,parseFloat(List.get("Stimulusafterframe")))));
-		print_in_results_nocheck(""+norm+columnname+" SD",normalizebaseline(arraySD,getmeantonormalize(array,parseFloat(List.get("Stimulusafterframe")))));
+		print_in_results_nocheck(""+norm+List.get("Measure")+columnname+".",normarray);
+		print_in_results_nocheck(""+norm+List.get("Measure")+columnname+" StdDev",normarraySD);
+		print_in_results_nocheck(""+norm+List.get("Measure")+columnname+" StdErr",normarraySDE);
+	};
+	selectWindow("Results");
+	saveAs("Results", Path);
+};
+function print_in_master_results_median(array,arraySD,normarray,normarraySD,tablename,columnname){
+	run("Clear Results");
+	//tablename="All norm Mean ratio traces of "+origtitle2;
+	Path=dir_saveorig+tablename+".xls";
+	if(File.exists(Path))open(Path);
+	print_in_results_nocheck("Time [s]",Atime);
+	print_in_results_nocheck(""+List.get("Measure")+columnname+".",array);
+	print_in_results_nocheck(""+List.get("Measure")+columnname+" IQR",arraySD);
+	if(stimulation){
+		print_in_results_nocheck(""+norm+List.get("Measure")+columnname+".",normarray);
+		print_in_results_nocheck(""+norm+List.get("Measure")+columnname+" IQR",normarraySD);
 	};
 	selectWindow("Results");
 	saveAs("Results", Path);
@@ -3517,7 +3664,7 @@ function add_strings_to_array(array,before,after){
 	return array2;
 };
 function initialise_arrays(){
-	//Create all arrays depending on the number of experiments to analyse
+	//Create all arrays depending on the number of experiments to analyze
 	msAorigtitle=newArray(maxseriesnumber);
 	msAExperimentnumber=newArray(maxseriesnumber); 
 	msAframes=newArray(maxseriesnumber);
@@ -3526,6 +3673,7 @@ function initialise_arrays(){
 //Exptype=1
 	msAmeanFRETchange=newArray(maxseriesnumber*Atoanal.length);
 	msASDmeanFRETchange=newArray(maxseriesnumber*Atoanal.length);
+	msASDEmeanFRETchange=newArray(maxseriesnumber*Atoanal.length);
 	msAmedianFRETchange=newArray(maxseriesnumber*Atoanal.length);
 	msASDmedianFRETchange=newArray(maxseriesnumber*Atoanal.length);
 };
@@ -3584,8 +3732,8 @@ function define_channels_to_analyze(){
 			noofratioch++;
 			rationame=""+List.get("acceptorname"+noofratioch)+"-"+List.get("donorname"+noofratioch)+"-ratio";
 			Achnames=Array.concat(Achnames,rationame);	
-			Awindownames=Array.concat(Awindownames,""+rationame+" channel");
-			List.set("ratiochannel"+noofratioch,""+rationame+" channel");
+			Awindownames=Array.concat(Awindownames,""+rationame);
+			List.set("ratiochannel"+noofratioch,""+rationame);
 			List.set("checkROIsforNaNs"+noofratioch,List.get("checkROIsforNaNs"+ch));
 			no=Awindownames.length-1;
 			Atoanal=Array.concat(Atoanal,no);	
@@ -3613,6 +3761,14 @@ function define_channels_to_analyze(){
 	if(List.get("cellstainingch")){
 		Asegch=newArray(0);
 		Asegch=Array.concat(Asegch,List.get("cellstainingchannel"));		
+	};
+	if(Atoanal.length==0){
+		if(List.get("cellstainingch")){
+			exit("Please select at least one imaging channel to perform analysis on. Only a cell staining channel was chosen.");
+		};
+		if(List.get("nucleuss")){
+			exit("Please select at least one imaging channel to perform analysis on. Only nucleus staining channel was chosen.");
+		};
 	};
 	if((parseFloat(List.get("segchno"))+1)>Asegch.length){
 		List.set("segchno",0);
@@ -3770,7 +3926,7 @@ function arrange_and_wait(threshold,channel,channel2,message,updateRM){
 		setThreshold(lower, upper);
 		setThreshold(lower, upper);
 	};
-	waitForUser(copyrigthnotice,message);
+	waitForUser(macroinfo,message);
 	if(isOpen(channel2)){	
 		selectWindow(channel2);
 		setLocation(xorig2,yorig2,worig2,horig2);	
@@ -3812,4 +3968,167 @@ function replace_string(string,old,new){
 	if(y==0)x=y;
 	if(x<0)string=replace(string, old, new);
 	return string;
+};
+function set_Pencil_Tool(){
+	initial=IJ.getToolName();
+	found=0;
+	for(i=0;i<22;i++){
+		setTool(i);
+		x=IJ.getToolName();
+		if(x=="Pencil Tool"){
+			i=22;
+			found=1;
+		};
+	};
+	if(found==0){
+		setTool(initial);
+	};
+};
+function get_SetMeasurementString(){
+	for(i=0;i<Ameasure.length;i++){
+		if(List.get("Measure")==Ameasure[i])setmeasure=Asetmeasure[i];
+	};
+	Adefaults=split(List.get("Parameter_bin"));
+	Atomeasure=subset_array(AsetMeasurements,Adefaults);
+	Atomeasure=Array.concat(setmeasure,Atomeasure);
+	SetMeasurementString=array2string(removeDuplicates(Atomeasure)," ");
+	return SetMeasurementString;
+};
+function get_from_results_array(array,position){
+	array2=newArray(array.length);
+	for(i=0;i<array.length;i++){
+		array2[i]=getResult(array[i],position);
+	};
+	return array2;
+};
+function write_in_resultstring(channel,array,ROIname,normarray,frames){
+	title=List.get("origtitle");
+	Adefaults=split(List.get("Parameter_bin"));
+	Aheading=subset_array(AmeasureAbbrev,Adefaults);
+	Aheading=remove_arrayEntry(Aheading,List.get("Measure"));
+	Aheading=add_strings_to_array(Aheading,"",ROIname);
+	if(stimulation){
+		meanc=FRETcalc(ASlice,array,parseFloat(List.get("Stimulusafterframe")),1,parseFloat(List.get("Equilibrationtime")),parseFloat(List.get("stopafterframe")));
+		fitc=FRETcalc(ASlice,array,parseFloat(List.get("Stimulusafterframe")),2,parseFloat(List.get("Equilibrationtime")),parseFloat(List.get("stopafterframe")));
+		minc=FRETcalc(ASlice,array,parseFloat(List.get("Stimulusafterframe")),4,parseFloat(List.get("Equilibrationtime")),parseFloat(List.get("stopafterframe")));
+		maxc=FRETcalc(ASlice,array,parseFloat(List.get("Stimulusafterframe")),5,parseFloat(List.get("Equilibrationtime")),parseFloat(List.get("stopafterframe")));
+		baselinev=getmeantonormalize(array,parseFloat(List.get("Stimulusafterframe")));
+		Asresultstring=newArray(title,title+"."+channel+"."+ROIname,date,channel,ROIname,title+"."+ROIname,amountrois,baselinev,meanc,fitc,minc,maxc);
+		AvariableResults=get_from_results_array(Aheading,0);
+		Asresultstring=Array.concat(Asresultstring,AvariableResults);
+		istring=a2resultsline(Asresultstring);
+		sresultstring+=istring;
+		File.append(sresultstring,sresultstringpath);
+		sresultstring="";
+	};	
+	for(row=0;row<frames;row++){
+		if(stimulation){
+			Aresultstring=newArray(title,title+"."+channel+"."+ROIname,date,channel,ROIname,title+"."+ROIname,amountrois,List.get("Stimulusafterframe"),List.get("Equilibrationtime"),List.get("stopafterframe"),baselinev,meanc,fitc,minc,maxc,Atime[row],array[row],normarray[row]);
+			AvariableResults=get_from_results_array(Aheading,row);
+			Aresultstring=Array.concat(Aresultstring,AvariableResults);
+			istring=a2resultsline(Aresultstring);
+			resultstring+=istring;
+		};
+		if(!stimulation){
+			Aresultstring=newArray(""+title,title+"."+channel+"."+ROIname,date,channel,ROIname,title+"."+ROIname,amountrois,List.get("stopafterframe"),Atime[row],array[row]);		
+			AvariableResults=get_from_results_array(Aheading,row);
+			Aresultstring=Array.concat(Aresultstring,AvariableResults);
+			istring=a2resultsline(Aresultstring);
+			resultstring+=istring;
+		};					
+	};
+	File.append(resultstring,resultstringpath);
+	resultstring="";
+};
+function write_resultstring_header(){
+	resultstringpath=""+dir_save+origtitle2+"_dataset.txt";
+	Adefaults=split(List.get("Parameter_bin"));
+	Aheading=subset_array(AmeasureAbbrev,Adefaults);
+	Aheading=remove_arrayEntry(Aheading,List.get("Measure"));
+	if(Exptype==1){
+		sresultstringpath=""+dir_save+origtitle2+"_short_dataset.txt";
+		if(stimulation){
+			Aresultstring=newArray("Experiment.ID","Trace.ID","date","channel","ROI","ROI.ID","total.ROI.number","Stimulation.after.frame","Time.for.requelibration","No.of.frames","Baseline","Mean.change","line.Fitted.change","Min.change","Max.change","time",List.get("Measure"),"Norm."+List.get("Measure"));
+			Asresultstring=newArray("Experiment.ID","Trace.ID","date","channel","ROI","ROI.ID","total.ROI.number","Baseline","Mean.change","line.Fitted.change","Min.change","Max.change");
+			Asresultstring=Array.concat(Asresultstring,Aheading);
+			sresultstring=a2resultsline(Asresultstring);
+			File.saveString(sresultstring,sresultstringpath);
+		};
+		if(!stimulation){
+			Aresultstring=newArray("Experiment.ID","Trace.ID","date","channel","ROI","ROI.ID","total.ROI.number","No.of.frames","time",List.get("Measure"));
+		};
+	};
+	if(Exptype==0){
+		Aresultstring=newArray("Experiment.ID","ROI.ID","date","channel","ROI","ROI.from.slice","total.ROI.number","total.No.of.slices",List.get("Measure"));
+	};
+	Aresultstring=Array.concat(Aresultstring,Aheading);
+	resultstring=a2resultsline(Aresultstring);
+	File.saveString(resultstring,resultstringpath);
+	resultstring="";
+	sresultstring="";
+};
+function a2resultsline(array){
+	line="";
+	for(i=0;i<array.length;i++){
+		if(i<(array.length-1))line=line+array[i]+"\t";
+		if(i==(array.length-1))line=line+array[i]+"\n";	
+	};
+	return line;
+};
+function remove_arrayEntry(array,entry){
+	c=0;
+	while(c<array.length){
+		if(array[c]==entry){
+			bA=Array.slice(array,0,c);
+			cA=Array.slice(array,c+1,array.length);
+			array=Array.concat(bA,cA);			
+		}else c++;
+	};
+	return array;
+};
+function removeDuplicates(aA){
+	c=0;
+	while(c<aA.length){
+		if(isDuplicate(aA[c],aA)){
+			bA=Array.slice(aA,0,c);
+			cA=Array.slice(aA,c+1,aA.length);
+			aA=Array.concat(bA,cA);			
+		}else c++;
+	};
+	return aA;
+	function isDuplicate(element,array){
+		no=0;
+		for(i=0;i<array.length;i++){
+			if(element==array[i])no++;
+		};
+		if(no>1)return 1;
+		if(no<=1)return 0;
+	};
+};
+function array2string(array,delimiter){
+	string="";
+	for(i=0;i<array.length;i++){
+		string+=""+array[i]+delimiter;
+	};
+	return string;
+};
+function subset_array(array,array_logic){
+	if(array.length!=array_logic.length){
+		return array;	
+	}else{
+		sarray=newArray(0);
+		for(i=0;i<array.length;i++){
+			if(array_logic[i]==1){
+				sarray=Array.concat(sarray,array[i]);
+			};
+		};
+		return sarray;
+	};
+};
+function calSDE(array){ //Calculates the Standard Error of arrayf
+	arrayf=removeNaN(array);
+	Array.getStatistics(arrayf,min,max,mean,stdDev);
+	if(arrayf.length<=2)return 0;
+	sderr=stdDev/sqrt(arrayf.length);
+	return sderr;
 };
