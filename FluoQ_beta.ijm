@@ -2456,7 +2456,7 @@ function main_Dialog(){
 					Dialog.addMessage("For altering preset parameters, activate advanced options in the first dialogue");	
 					Dialog.addMessage("");
 				};
-				if(List.get("advancedoptions"))Dialog.addChoice("Which summary statistics should be extracted from the raw pixels of each ROI?",Ameasuretit,Ameasureinit);
+				if(List.get("advancedoptions"))Dialog.addChoice("Which measurement parameter should be used to the produce summary statistics?",Ameasuretit,Ameasureinit);
 				if(List.get("sadvancedoptions")){
 					Dialog.setInsets(0,40,0);
 					Dialog.addMessage(""+Ameasureinit+" will be extracted from the raw pixels of each ROI.");
