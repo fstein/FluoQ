@@ -548,7 +548,7 @@ function set_background_nan(channelname,thresholding,loop,processguieachloop,thr
 	setThreshold(minvalue_i, maxvalue_i);
 	getThreshold(lower, upper);
 	selectWindow(channelname);
-	if(lower>=0&&upper>0)run("NaN Background", "stack");
+	if(lower>=0&&upper>0&&bitDepth()==32)run("NaN Background", "stack");
 	resetThreshold();
 };
 function smooth_image(channel,Asmothenings){
@@ -639,7 +639,7 @@ function remove_saturated_pixels(channel){
 	run("Threshold...");
 	setThreshold(0, maxvalue);
 	getThreshold(lower, upper);
-	if(lower>=0&&upper>0)run("NaN Background", "stack");
+	if(lower>=0&&upper>0&&bitDepth()==32)run("NaN Background", "stack");
 	resetThreshold();
 	run(""+Smaxvalue+"-bit");	
 };
@@ -832,7 +832,7 @@ function FRETpiccalc(dir_save,title,channel,Stimulusafterframe,Equilibrationtime
 		run("Threshold...");
 		setThreshold(0,max-1);
 		getThreshold(lower, upper);
-		if(lower>=0&&upper>0)run("NaN Background", "stack");
+		if(lower>=0&&upper>0&&bitDepth()==32)run("NaN Background", "stack");
 		resetThreshold();
 		run("Rename...", "title=["+After+"]");
 		resize();
@@ -852,7 +852,7 @@ function FRETpiccalc(dir_save,title,channel,Stimulusafterframe,Equilibrationtime
 			if(totalmax>1E10){
 				setThreshold(0,maxnew);
 				getThreshold(lower, upper);
-				if(lower>=0&&upper>0)run("NaN Background", "stack");
+				if(lower>=0&&upper>0&&bitDepth()==32)run("NaN Background", "stack");
 			};
 			resetThreshold();
 			getRawStatistics(nPixels, mean, min, max, std, histogram);
@@ -1093,6 +1093,7 @@ function save_parameter(){
 	print("Macro-Version: "+version);
 	print("Date and time the analysis startet: "+timestamp2);
 	getDateAndTime(year, month, dayOfWeek, dayOfMonth, hour, minute, second, msec);
+	month=month+1;
 	if(month<10)smonth="0"+month;
 	if(month>=10)smonth=month;
 	if(dayOfMonth<10)sdayOfMonth="0"+dayOfMonth;
@@ -1184,7 +1185,7 @@ function save_parameter(){
 	selectWindow("Log");
 	saveAs("Text", fullpath);
 };
-function subfolderarray(dir,chabbrev,chnumber){// partly from http://rsb.info.nih.gov/ij/macros/ListFilesRecursively.txt
+function subfolderarray(dir,chabbrev,chnumber){//partly adapted from http://rsb.info.nih.gov/ij/macros/ListFilesRecursively.txt
 	count = 0;
 	count2=listFilessub(dir,chabbrev,chnumber); 
 	Dirarray=newArray(count2);
@@ -1200,7 +1201,9 @@ function subfolderarray(dir,chabbrev,chnumber){// partly from http://rsb.info.ni
   		      			listFilessub(""+direct+list[i],chabbrev,chnumber);
   		     		else{
   		     			for(c=0;c<chnumber;c++){
-  		     				doescontainstring=indexOf(list[i],List.get("chabbrev"+c));
+  		     				//doescontainstring=indexOf(list[i],""+chabbrev+c);
+  		     				ch=c+1;
+  		     				doescontainstring=indexOf(list[i],List.get("chabbrev"+ch));
   		     				if(doescontainstring>=0){
   		     					Acheck[c]=1;			
   		     				};
@@ -1223,7 +1226,9 @@ function subfolderarray(dir,chabbrev,chnumber){// partly from http://rsb.info.ni
         		else
         		{
         			for(c=0;c<chnumber;c++){
-  		     			doescontainstring=indexOf(list[i],List.get("chabbrev"+c));
+  		     			//doescontainstring=indexOf(list[i],""+chabbrev+c);
+  		     			ch=c+1;
+  		     			doescontainstring=indexOf(list[i],List.get("chabbrev"+ch));
   		     			if(doescontainstring>=0){
   		     				Acheck[c]=1;			
   		     			};
@@ -1242,16 +1247,13 @@ function nameofsubfolder(subfolder){
 	subfoldername=newArray(subfolder.length);
  	for(i=0;i<subfolder.length;i++){
 		showProgress(i/subfolder.length);
-		dirparent=File.getParent(subfolder[i]);
-		listparent=getFileList(dirparent);
-		for (l=0; l<listparent.length; l++) {
-			if (endsWith(listparent[l], "/")){
-				listparent[l] = replace(listparent[l], "/", "");
-				containstring=indexOf(subfolder[i], listparent[l]);
-				if(containstring>=0){
-					subfoldername[i]=listparent[l];
-				};
-			};
+		subfoldername[i]=File.getName(subfolder[i]);
+	};
+	subfoldername_rd=removeDuplicates(subfoldername);
+	if(subfoldername_rd.length!=subfoldername.length){
+		for(i=0;i<subfolder.length;i++){
+			showProgress(i/subfolder.length);
+			subfoldername[i]=""+File.getName(File.getParent(subfolder[i]))+"_"+File.getName(subfolder[i]);
 		};
 	};
  	return subfoldername;
@@ -2003,11 +2005,12 @@ function setFIJIsettings(){//Fiji options to make everything equal and avoid mis
 	scwidth=screenWidth;
 	scheight=screenHeight;
 	getDateAndTime(year, month, dayOfWeek, dayOfMonth, hour, minute, second, msec);
+	month=month+1;
 	if(month<10)smonth="0"+month;
 	if(month>=10)smonth=month;
 	if(dayOfMonth<10)sdayOfMonth="0"+dayOfMonth;
 	if(dayOfMonth>=10)sdayOfMonth=dayOfMonth;
-	timestamp=""+year+""+smonth+""+sdayOfMonth+"_"+hour+"h"+minute;
+	timestamp=""+year+""+smonth+""+sdayOfMonth+"_"+hour+"h"+minute+"min";
 	timestamp2=""+year+"-"+smonth+"-"+sdayOfMonth+" - "+hour+"h "+minute+"min";
 	date=""+year+""+smonth+""+sdayOfMonth;
 };
@@ -2018,6 +2021,13 @@ function loadparameter(){
 	if(File.exists(tmp_file)||File.exists(tmp_file_dir)){
 		if(File.exists(tmp_file_dir)){
 			macroparameter=File.openAsString(tmp_file_dir);
+			forbidden=indexOf(macroparameter, "\\");
+			while(indexOf(macroparameter, "\\")>=0){
+				forbidden=indexOf(macroparameter, "\\");
+				macroparameter_start=substring(macroparameter,0,forbidden);
+				macroparameter_end=substring(macroparameter,forbidden+1,lengthOf(macroparameter));
+				macroparameter=macroparameter_start+"/"+macroparameter_end;
+			};
 			List.setList(macroparameter);
 		};
 		if(File.exists(tmp_file)&&!File.exists(tmp_file_dir)){
@@ -2121,6 +2131,13 @@ function loadparameter(){
 function saveparameter(){
 	if(List.get("savetmp")){
 		macroparameter = List.getList();
+		forbidden=indexOf(macroparameter, "\\");
+		while(indexOf(macroparameter, "\\")>=0){
+			forbidden=indexOf(macroparameter, "\\");
+			macroparameter_start=substring(macroparameter,0,forbidden);
+			macroparameter_end=substring(macroparameter,forbidden+1,lengthOf(macroparameter));
+			macroparameter=macroparameter_start+"/"+macroparameter_end;
+		};
 		File.saveString(macroparameter,tmp_file);
 		File.saveString(macroparameter,tmp_file_dir);
 	};
