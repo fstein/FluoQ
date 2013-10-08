@@ -4,7 +4,7 @@ FluoQ
 Fluorescence Quantification macro for ImageJ
 
 #Download
-Please note, that simply right clicking on the file FluoQ_beta.ijm and save it to a folder does not work. You either need to send a request via GitHub to download this file. 
+Please note, that simply right clicking on the file FluoQ_beta.ijm and save it to a folder does not work. You need to send a request via GitHub to download this file. 
 Alternatively, you could just drop me a mail (frank.stein@embl.de) and I will send you the right file asap.
 
 #Installation
